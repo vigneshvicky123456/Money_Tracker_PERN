@@ -142,8 +142,8 @@ const EditAccount = ({ editModalOpen, onClose }) => {
                 onChange={handleAccountChange}
                 className="p-10 w-7 focus:border-blue-400 hover:border-gray-300 focus:outline-none"
               ></input>
-              <label className=" text-sm" name="accountCurrency" onChange={""}>
-                {currencyModel1.currencyModel?.currency_name}
+              <label className=" text-sm" name="accountCurrency">
+                {editAccounts.accountCurrency}
               </label>
             </form>
           </div>
@@ -154,7 +154,7 @@ const EditAccount = ({ editModalOpen, onClose }) => {
                 name="accountCode"
                 onChange={handleAccountChange}
               >
-                {editAccounts.balance} {currencyModel1.currencyModel?.currency_code}
+                {editAccounts.balance} {editAccounts.accountCode}
               </label>
             </form>
           </div>

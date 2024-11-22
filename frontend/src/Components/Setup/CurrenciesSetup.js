@@ -13,7 +13,13 @@ const CurrenciesSetup = () => {
   const  currencyModel1  = useSelector((state) => state.currency.currencyModel1);
   const { currencies } = useSelector((state) => state.currency);
 
-  const [selectedDropdown, SetSelectedDropdown] = useState();
+  const [selectedDropdown, SetSelectedDropdown] = useState({
+    id: 0,
+    currencyName: "",
+    currencyCode: "",
+    currencyValue: 0,
+    currencyFlag: "",
+  });
  
   const handleSelectCurrency = (e) => {
     dispatch(getSingleCurrency(e.target.value));
@@ -24,8 +30,16 @@ const CurrenciesSetup = () => {
   useEffect(() => {
     dispatch(allCurrencies());
     dispatch(getSelectedCurrency());
-    SetSelectedDropdown(currencyModel1?.currency_id)
-  },[dispatch,currencyModel1?.currency_id]);
+    if (currencyModel1) {
+      SetSelectedDropdown({
+        id: currencyModel1.currencyModel?.id,
+        currencyName: currencyModel1.currencyModel?.currency_name || "",
+        currencyCode: currencyModel1.currencyModel?.currency_code || "",
+        currencyValue: currencyModel1.currencyModel?.currency_value || 0,
+        currencyFlag: currencyModel1.currencyModel?.currency_flag || "",
+      });
+    }
+},[dispatch,currencyModel1?.currencyModel?.id]);
 
   return (
     <div className="px-[11px]">
@@ -51,7 +65,7 @@ const CurrenciesSetup = () => {
           <select
             id="currency"
             name="currency"
-            value={selectedDropdown}
+            value={selectedDropdown.id}
             onChange={handleSelectCurrency}            
             className="border rounded-[5px] p-[9px] w-[330px] text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
           >
@@ -76,7 +90,7 @@ const CurrenciesSetup = () => {
           <select
             id="currency"
             name="currency"
-            onChange={handleSelectCurrency}
+          //  onChange={handleSelectCurrency}
             className="border rounded-[5px] p-[9px] w-[330px] text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
           >
            <option className="text-grey-600" value="" disabled selected hidden >
@@ -100,6 +114,6 @@ const CurrenciesSetup = () => {
 
 export default CurrenciesSetup;
 
-//<img src={currencyModel.currency_flag} alt={`${currencyModel.currency_name} flag`} />
+
 
  

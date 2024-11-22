@@ -34,7 +34,7 @@ const Settings = () => {
       <div className="fixed h-[62px] bg-indigo-700 border-b border-gray-300 w-full">
         <h1 className="ml-[19px] py-[14.5px] text-white text-2xl">Settings</h1>
         <div className="bg-gray-100 pt-[18px] h-screen">
-          <div className="mx-[99px] p-[15px] shadow-custom bg-white w-[75%] border h-[250px] rounded">
+          <div className="mx-[99px] p-[15px] shadow-custom bg-white w-[75%] border h-[full] rounded">
             <div className="flex">
               <button onClick={toggleDiv} className="relative flex border p-1">
                 {isVisible ? ">" : ">"}

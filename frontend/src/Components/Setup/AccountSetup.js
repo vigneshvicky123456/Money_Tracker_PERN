@@ -13,9 +13,9 @@ const AccountSetup = () => {
     group: "",
     balance: "",
     accountCurrency: "",
-    accountCheck: false,
+    accountCheck: true,
     accountCode: "",
-    dashboard: false,
+    dashboard: true,
   };
   const [newAccounts, setNewAccounts] = useState(newAccountState);
 
@@ -62,7 +62,13 @@ const AccountSetup = () => {
 
   useEffect(() => {
     dispatch(getSelectedCurrency());
-  }, [dispatch, currencyModel1?.currency_id]);
+    if (currencyModel1) {
+      setNewAccounts({
+        accountCurrency: currencyModel1.currencyModel?.currency_name || "",
+        accountCode:  currencyModel1.currencyModel?.currency_code || "",
+      });
+    }
+  }, [dispatch, currencyModel1?.currencyModel?.id]);
 
   return (
     <div className=" mt-[10px]">
@@ -138,7 +144,7 @@ const AccountSetup = () => {
               name="accountCurrency"
               onChange={handleAccountChange}
             >
-              {currencyModel1.currencyModel?.currency_name}
+              {newAccounts.accountCurrency}
             </label>
           </form>
         </div>
@@ -157,7 +163,7 @@ const AccountSetup = () => {
               name="accountCode"
               onChange={handleAccountChange}
             >
-              {currencyModel1.currencyModel?.currency_code}
+              {newAccounts.accountCode}
             </label>
           </form>
         </div>

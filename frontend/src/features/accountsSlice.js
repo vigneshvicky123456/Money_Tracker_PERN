@@ -12,8 +12,6 @@ export const allAccounts = createAsyncThunk('account/allAccounts', async () => {
 // Get Single Accounts
 export const getSingleAccount = createAsyncThunk('account/getSingleAccount', async (id) => {
     const response = await axios.get(`http://localhost:3003/accounts/${id}`);
-    console.log('ASYNC single account ',response.data);
-    
     return response.data;
 });
 

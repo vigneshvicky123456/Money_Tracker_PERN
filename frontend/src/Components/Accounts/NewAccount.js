@@ -12,11 +12,13 @@ const NewAccount = ({ newModalOpen, onClose }) => {
     group: "",
     balance: "",
     accountCurrency: "",
-    accountCheck: false,
+    accountCheck: true,
     accountCode: "",
-    dashboard: false,
+    dashboard: true,
   }
+
   const [newAccounts, setNewAccounts] = useState(newAccountState);
+  //const [showError, setShowError] = useState(false);
 
   const groupOptions = [
     { id: 1, label: "Cash", value: "Cash" },
@@ -28,7 +30,13 @@ const NewAccount = ({ newModalOpen, onClose }) => {
 
   useEffect(() => {
     dispatch(getSelectedCurrency());
-  }, [dispatch, currencyModel1?.currency_id]);
+    if (currencyModel1) {
+      setNewAccounts({
+        accountCurrency: currencyModel1.currencyModel?.currency_name || "",
+        accountCode:  currencyModel1.currencyModel?.currency_code || "",
+      });
+    }
+  }, [dispatch, currencyModel1?.currencyModel?.id]);
 
   if (!newModalOpen) return null;
 
@@ -45,7 +53,12 @@ const NewAccount = ({ newModalOpen, onClose }) => {
   };
 
   const saveAccount = (e) => {
-    e.preventDefault();
+     e.preventDefault();
+    // if (!newAccounts.name.trim()) {
+    //   setShowError(true);
+    // } else {
+    //   setShowError(false);
+    // }
     dispatch(addAccount({
     account_name: newAccounts.name,
     account_type: newAccounts.group, 
@@ -55,8 +68,7 @@ const NewAccount = ({ newModalOpen, onClose }) => {
     account_currency_name_check: newAccounts.accountCheck, 
     show_on_dashboard: newAccounts.dashboard
     }));
-    setNewAccounts(newAccountState)
-    console.log("Accounts Data Submitted:", newAccounts);
+    setNewAccounts(newAccountState);
     onClose(false);
   };
 
@@ -73,7 +85,7 @@ const NewAccount = ({ newModalOpen, onClose }) => {
           </button>
         </div>
         <div className="flex p-5">
-          <div className="mt-[0px] relative">
+          <div className="relative">
             <form>
               <label
                 htmlFor="currency"
@@ -91,6 +103,11 @@ const NewAccount = ({ newModalOpen, onClose }) => {
                 className="block border rounded-[5px] p-[9px] w-[375px] text-sm focus:border-blue-400 focus:outline-none"
                 required
               ></input>
+                {/* {showError && (
+            <span className="absolute top-[-30px] left-0 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-md">
+              Name is required
+            </span>
+          )} */}
             </form>
           </div>
           <div className="mt-[0px] pl-[14px] relative inline-block">
@@ -129,7 +146,7 @@ const NewAccount = ({ newModalOpen, onClose }) => {
                 name="accountCurrency"
                 onChange={handleAccountChange}
               >
-                {currencyModel1.currencyModel?.currency_name}
+                {newAccounts.accountCurrency}
               </label>
             </form>
           </div>
@@ -148,7 +165,7 @@ const NewAccount = ({ newModalOpen, onClose }) => {
                 name="accountCode"
                 onChange={handleAccountChange}
               >
-                {currencyModel1.currencyModel?.currency_code}
+                {newAccounts.accountCode}
               </label>
             </form>
           </div>

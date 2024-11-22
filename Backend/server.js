@@ -23,6 +23,7 @@ const expenseRoutes = require("./routes/expenses");
 const transferRoutes = require("./routes/transfer");
 const incomeRoutes = require("./routes/income");
 const selectedCurrencyRoutes = require("./routes/selectedCurrency");
+const newTransactionRoutes = require("./routes/newTransactions");
 
 //Mildware
 const app = express();
@@ -36,6 +37,7 @@ app.use("/expenses",expenseRoutes);
 app.use("/transfer",transferRoutes);
 app.use("/income",incomeRoutes);
 app.use("/selectedCurrency",selectedCurrencyRoutes);
+app.use("/newTransactions",newTransactionRoutes);
 
 sequelize.sync()
     .then(() => {

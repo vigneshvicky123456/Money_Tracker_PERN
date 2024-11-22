@@ -5,11 +5,12 @@ import { allAccounts } from "../../features/accountsSlice";
 const NetWorth = () => {
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.account);
+    const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
     const [visibleTables, setVisibleTables] = useState({});
 
     useEffect(() => {
         dispatch(allAccounts());
-    }, [dispatch]);
+    }, [dispatch,currencyModel1?.currencyModel?.id]);
 
     const groupedAccounts = accounts.reduce((acc, account) => {
      if (!acc[account.account_type]) {
@@ -44,7 +45,7 @@ const NetWorth = () => {
           >
             <h2 className="text-lg font-semibold">{type}</h2>
             <span className="text-green-600">
-               {totalBalances[type]} USD
+               {totalBalances[type]} {currencyModel1.currencyModel?.currency_code}
             </span>
           </div>
           {visibleTables[type] && (
@@ -54,7 +55,7 @@ const NetWorth = () => {
                   <div className="py-[9px] px-[15px] flex justify-between items-center border-b">
                     <span className="text-blue-500">{accdata.account_name}</span>
                     <div>
-                      <span>{accdata.account_balance} USD</span>
+                      <span>{accdata.account_balance} {accdata.account_currency_code}</span>
                     </div>
                   </div>
                 </div>

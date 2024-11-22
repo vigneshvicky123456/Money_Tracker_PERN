@@ -1,17 +1,34 @@
 import { useState } from "react";
-import Income from "./Income";
-import Expense from "./Expense";
-import Transfer from "./Transfer";
+import Income from "../Dashboard/New Transaction/Income";
+import Expense from "../Dashboard/New Transaction/Expense";
+import Transfer from "../Dashboard/New Transaction/Transfer";
 
-const NewTransaction = () => {
+const NewModal = ({ newTransModalOpen, onClose }) => {
 
-  const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState(0);
 
-  const tabs = ["Expense", "Transfer", "Income"];
+    const tabs = ["Expense", "Transfer", "Income"];
+
+
+    if (!newTransModalOpen) return null;
+
+    const closeNewTransModal = () => {
+        onClose(false);
+      };
 
   return (
-    <div className="w-full">
-      <div className="flex border rounded-t">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
+     <div className="bg-white w-full max-w-[56%] h-[full] rounded-[5px] shadow-lg">
+        <div className="flex justify-between items-center px-5 py-[13px] border-b ">
+        <h2 className="text-lg">New Transaction</h2>
+          <button
+            onClick={closeNewTransModal}
+            className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
+          >
+            ×
+          </button>
+        </div>
+        <div>
         {tabs.map((tab, index) => (
           <button
             key={index}
@@ -31,9 +48,8 @@ const NewTransaction = () => {
             {tab}
           </button>
         ))}
-      </div>
-
-      <div className="p-4 border rounded-b">
+        </div>
+        <div className="p-4 border rounded-b">
         {activeTab === 0 && (
           <form className="space-y-4">
             <Expense />
@@ -52,8 +68,9 @@ const NewTransaction = () => {
           </form>
         )}
       </div>
+     </div>
     </div>
-  );
-};
+  )
+}
 
-export default NewTransaction;
+export default NewModal;

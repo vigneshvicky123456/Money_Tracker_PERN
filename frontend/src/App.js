@@ -2,7 +2,6 @@ import React from 'react';
 //import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Setup from './Pages/Setup';
-//import Home from './Pages/Home';
 import Dashboard from './Pages/Dashboard';
 import Transactions from './Pages/Transactions';
 import Accounts from './Pages/Accounts';
@@ -14,12 +13,10 @@ import SideNavbar from './Components/Navbar/SideNavbar';
 const App = () => {
   return (
     <>
-   
     <Router>
       <Routes>
         <Route path='/setup' element={<Setup />} />
         <Route path='/' element={<SideNavbar />} >
-        {/* <Route path='/' element={<Home />} /> */}
         <Route index element={<Dashboard />} />
         <Route path='transactions' element={<Transactions />} />
         <Route path='accounts' element={<Accounts />} />
@@ -29,7 +26,6 @@ const App = () => {
         </Route>
       </Routes>
     </Router>
-      
     </>
   )
 }
