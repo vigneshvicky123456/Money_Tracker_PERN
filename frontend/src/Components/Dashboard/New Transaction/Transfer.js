@@ -7,6 +7,8 @@ const Transfer = () => {
   const dispatch = useDispatch();
   const { accounts } = useSelector((state) => state.account);
 
+  const [showError, setShowError] = useState(false);
+
   const newTransferState = {
     type: "Transfer",
     fromName: "",
@@ -17,7 +19,7 @@ const Transfer = () => {
     toNameId: "",
     toAmount: 0,
     toCode: "",
-    date: new Date(),
+    date: new Date().toISOString().slice(0, 10),
     note: "",
   };
 
@@ -27,9 +29,32 @@ const Transfer = () => {
     dispatch(allAccounts());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (accounts.length > 0) {
+      const firstAccount = accounts[0];
+      setNewTransfer((prev) => ({
+        ...prev,
+        fromNameId: firstAccount.id.toString(),
+        fromName: firstAccount.account_name,
+        fromCode: firstAccount.account_currency_code,
+      }));
+    }
+  }, [accounts]);
+
+  useEffect(() => {
+    if (accounts.length > 0) {
+      const secondAccount = accounts[1];
+      setNewTransfer((prev) => ({
+        ...prev,
+        toNameId: secondAccount.id.toString(),
+        toName: secondAccount.account_name,
+        toCode: secondAccount.account_currency_code,
+      }));
+    }
+  }, [accounts]);
+
   const accountTransferChange = (e) => {
     const { name, value } = e.target;
-
     if (name === "fromNameId") {
       const selectedAccount = accounts.find(
         (acc) => acc.id.toString() === value
@@ -60,20 +85,27 @@ const Transfer = () => {
 
   const saveTransfer = (e) => {
     e.preventDefault();
-    dispatch(addNewTransaction({
-      transaction_type: newTransfer.type,
-      transaction_from_name: newTransfer.fromName, 
-      transaction_from_amount: newTransfer.fromAmount,
-      transaction_from_code: newTransfer.fromCode, 
-      transaction_to_name: newTransfer.toName, 
-      transaction_to_amount: newTransfer.toAmount, 
-      transaction_to_code: newTransfer.toCode, 
-      transaction_tag: "",
-      transaction_note: newTransfer.note,
-      transaction_date: newTransfer.date
-    }));
-    console.log("saveTransfer ", newTransfer);
-    setNewTransfer(newTransferState);
+    if (!newTransfer.fromAmount) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      dispatch(
+        addNewTransaction({
+          transaction_type: newTransfer.type,
+          transaction_from_name: newTransfer.fromName,
+          transaction_from_amount: newTransfer.fromAmount,
+          transaction_from_code: newTransfer.fromCode,
+          transaction_to_name: newTransfer.toName,
+          transaction_to_amount: newTransfer.toAmount,
+          transaction_to_code: newTransfer.toCode,
+          transaction_tag: "",
+          transaction_note: newTransfer.note,
+          transaction_date: newTransfer.date,
+        })
+      );
+      console.log("saveTransfer ", newTransfer);
+      setNewTransfer(newTransferState);
+    }
   };
 
   return (
@@ -109,6 +141,11 @@ const Transfer = () => {
             value={newTransfer.fromAmount}
             onChange={accountTransferChange}
           />
+          {showError && (
+            <span className="absolute top-[-30px] left-0 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-md">
+              Amount is required
+            </span>
+          )}
           <span className="p-[10px] pl-[28.5px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {newTransfer.fromCode}
           </span>

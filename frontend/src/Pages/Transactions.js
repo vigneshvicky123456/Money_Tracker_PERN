@@ -1,9 +1,38 @@
 import { React, useState } from "react";
+import { useSelector } from "react-redux";
 import NewModal from "../Components/Transactions/NewModal";
+import RecentTransactions from "../Components/Dashboard/RecentTransactions";
 
 const Transactions = () => {
-
+  const { newTransactions } = useSelector((state) => state.newTransaction);
   const [newTransModal, setNewTransModal] = useState(false);
+  
+  const calculateTotals = () => {
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    newTransactions.forEach((history) => {
+      const amount = parseFloat(
+        history.transaction_from_amount !== "0"
+          ? history.transaction_from_amount
+          : history.transaction_to_amount
+      );
+
+      if (history.transaction_type === "Income") {
+        totalIncome += amount;
+      } else if (history.transaction_type === "Expense") {
+        totalExpense += amount;
+      }
+    });
+
+    return {
+      totalIncome: totalIncome.toFixed(2),
+      totalExpense: totalExpense.toFixed(2),
+      balance: (totalIncome - totalExpense).toFixed(2),
+    };
+  };
+
+  const { totalIncome, totalExpense, balance } = calculateTotals();
 
   return (
     <div>
@@ -24,13 +53,37 @@ const Transactions = () => {
                   New
                 </span>
               </button>
-              <NewModal 
-              newTransModalOpen={newTransModal}
-              onClose={setNewTransModal}/>
+              <NewModal
+                newTransModalOpen={newTransModal}
+                onClose={setNewTransModal}
+              />
             </div>
           </div>
+          <div className="w-[100%] bg-white">
+            <RecentTransactions />
+          </div>
+
+          <div className="ml-[560px] w-[40%]">
+            <div className="flex p-3 border-b justify-between ">
+              <h1>Total income</h1>
+              <span className="text-green-500">{totalIncome} USD</span>
+            </div>
+            <div className="flex p-3 border-b justify-between">
+              <h1>Total expense</h1>
+              <span className="text-red-500">{totalExpense} USD</span>
+            </div>
+            <span
+              className={
+                parseFloat(balance) >= 0
+                  ? "text-green-500 flex p-3 justify-end"
+                  : "text-red-500 flex p-3 justify-end"
+              }
+            >
+              {parseFloat(balance) < 0 ? `-${balance}` : `${balance}`}{" "}
+              USD
+            </span>
+          </div>
         </div>
-      
       </div>
     </div>
   );

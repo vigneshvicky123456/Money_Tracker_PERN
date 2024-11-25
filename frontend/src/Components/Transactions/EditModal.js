@@ -1,16 +1,15 @@
 import { useState } from "react";
-import Income from "../Dashboard/New Transaction/Income";
-import Expense from "../Dashboard/New Transaction/Expense";
-import Transfer from "../Dashboard/New Transaction/Transfer";
+import EditExpense from "./Edit Transaction/EditExpense";
+import EditTransfer from "./Edit Transaction/EditTransfer";
+import EditIncome from "./Edit Transaction/EditIncome";
 
-const NewModal = ({ newTransModalOpen, onClose }) => {
+const EditModal = ({ editTransModalOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["Expense", "Transfer", "Income"];
+  if (!editTransModalOpen) return null;
 
-  if (!newTransModalOpen) return null;
-
-  const closeNewTransModal = () => {
+  const closeEditTransModal = () => {
     onClose(false);
   };
 
@@ -18,9 +17,9 @@ const NewModal = ({ newTransModalOpen, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
       <div className="bg-white w-full max-w-[45%] h-[full] rounded-[5px] shadow-lg">
         <div className="flex justify-between items-center px-5 py-[13px] border-b ">
-          <h2 className="text-lg">New Transaction</h2>
+          <h2 className="text-lg">Edit Transaction</h2>
           <button
-            onClick={closeNewTransModal}
+            onClick={closeEditTransModal}
             className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
           >
             ×
@@ -50,19 +49,19 @@ const NewModal = ({ newTransModalOpen, onClose }) => {
         <div className="p-4 border rounded-b">
           {activeTab === 0 && (
             <form className="space-y-4">
-              <Expense />
+              <EditExpense />
             </form>
           )}
 
           {activeTab === 1 && (
             <form className="space-y-4">
-              <Transfer />
+              <EditTransfer />
             </form>
           )}
 
           {activeTab === 2 && (
             <form className="space-y-4">
-              <Income />
+              <EditIncome />
             </form>
           )}
         </div>
@@ -71,4 +70,4 @@ const NewModal = ({ newTransModalOpen, onClose }) => {
   );
 };
 
-export default NewModal;
+export default EditModal;

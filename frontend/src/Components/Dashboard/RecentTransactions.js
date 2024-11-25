@@ -1,10 +1,18 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allNewTransactions } from "../../features/newTransactionsSlice";
+import EditModal from "../Transactions/EditModal";
 
 const RecentTransactions = () => {
   const dispatch = useDispatch();
   const { newTransactions } = useSelector((state) => state.newTransaction);
+  console.log("selector newTransaction: ", newTransactions);
+
+  const [editTransModal, setEditTransModal] = useState(false);
+  
+  const editTransShow = () => {
+    setEditTransModal(true);
+  }
 
   useEffect(() => {
     dispatch(allNewTransactions());
@@ -26,8 +34,14 @@ const RecentTransactions = () => {
   };
 
   const formatAmount = (amount, type) => {
-    const formattedAmount = parseFloat(amount || 0).toFixed(2); 
-    return type === "Expense" ? `-${formattedAmount}` : formattedAmount;
+    const parsedAmount = parseFloat(amount).toFixed(2);
+    if (type === "Expense") {
+      return `-${parsedAmount}`;
+    }
+    if (type === "Income") {
+      return `${parsedAmount}`;
+    }
+    return parsedAmount;
   };
 
   if (!newTransactions || newTransactions.length === 0) {
@@ -40,16 +54,29 @@ const RecentTransactions = () => {
 
   return (
     <div className="w-full h-auto">
-      <div className="border rounded">
+      <div>
         <ul>
           {newTransactions.map((history) => (
             <li key={history.id} className="p-3 border-b">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between text-sm items-center">
                 <div className="flex space-x-4">
                   <span className="text-gray-500">
                     {formatDate(history.transaction_date)}
                   </span>
-                  <span>{history.transaction_from_name || "Unknown"}</span>
+                  <span>
+                    {history.transaction_from_name ||
+                      history.transaction_to_name}
+                  </span>
+                  {history.transaction_tag ? (
+                    <span className="border-[1.5px] border-gray-300 bg-gray-200 rounded p-1">
+                      {history.transaction_tag}
+                    </span>
+                  ) : (
+                    <span>{history.transaction_to_name}</span>
+                  )}
+                  <span className="text-gray-500">
+                    {history.transaction_note}
+                  </span>
                 </div>
                 <div
                   className={`flex items-center space-x-4 ${
@@ -62,11 +89,28 @@ const RecentTransactions = () => {
                       : "text-black"
                   }`}
                 >
-                  <span>{formatAmount(history.transaction_from_amount, history.transaction_type)}</span>
-                  <span>{history.transaction_from_code || "N/A"}</span>
-                  <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  <span>
+                    {formatAmount(
+                      history.transaction_from_amount !== "0"
+                        ? history.transaction_from_amount
+                        : history.transaction_to_amount,
+                      history.transaction_type
+                    )}
+                  </span>
+                  <span>
+                    {history.transaction_from_code ||
+                      history.transaction_to_code}
+                  </span>
+                  <button 
+                     className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                     onClick={editTransShow}
+                  >
                     Edit
                   </button>
+                  <EditModal 
+                    editTransModalOpen ={editTransModal}
+                    onClose={setEditTransModal}
+                  />
                 </div>
               </div>
             </li>
@@ -78,4 +122,3 @@ const RecentTransactions = () => {
 };
 
 export default RecentTransactions;
-

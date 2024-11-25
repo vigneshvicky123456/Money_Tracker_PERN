@@ -65,7 +65,7 @@ const Dashboard = () => {
             </div>
             <div className="mt-[15px]">
               {recentTransVisible && (
-                <div>
+                <div className="border rounded">
                   <RecentTransactions />
                 </div>
               )}
