@@ -1,18 +1,35 @@
-import { useState } from "react";
-import EditExpense from "./Edit Transaction/EditExpense";
-import EditTransfer from "./Edit Transaction/EditTransfer";
-import EditIncome from "./Edit Transaction/EditIncome";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import EditExpense from "./EditExpense";
+import EditTransfer from "./EditTransfer";
+import EditIncome from "./EditIncome";
+import { getSingleNewTransaction } from "../../../features/newTransactionsSlice";
+
 
 const EditModal = ({ editTransModalOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const dispatch = useDispatch();
+  const selectedNewTransaction = useSelector((state) => state.newTransaction.selectedNewTransaction);
 
+  const [activeTab, setActiveTab] = useState('Expense');
   const tabs = ["Expense", "Transfer", "Income"];
+
+  useEffect(() => {
+    dispatch(getSingleNewTransaction());
+       
+     if (selectedNewTransaction) {
+    const { transaction_type } = selectedNewTransaction;
+      if (transaction_type) {
+        setActiveTab(transaction_type);
+      }
+     }
+  }, [dispatch, selectedNewTransaction]);
+
   if (!editTransModalOpen) return null;
 
   const closeEditTransModal = () => {
     onClose(false);
   };
-
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
       <div className="bg-white w-full max-w-[45%] h-[full] rounded-[5px] shadow-lg">
@@ -26,11 +43,11 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
           </button>
         </div>
         <div>
-          {tabs.map((tab, index) => (
+          {tabs.map((tab) => (
             <button
-              key={index}
+              key={tab}
               className={`w-1/3 p-[10px] text-center text-sm border-r ${
-                activeTab === index
+                activeTab === tab
                   ? `bg-gray-100 shadow-[inset_-3px_0_3px_rgba(0,0,0,0.05),_inset_3px_0_3px_rgba(0,0,0,0.05),_inset_0_3px_3px_rgba(0,0,0,0.05)] ${
                       tab === "Expense"
                         ? "text-red-500"
@@ -40,26 +57,26 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
                     }`
                   : "text-black"
               }`}
-              onClick={() => setActiveTab(index)}
+              onClick={() => setActiveTab(tab)}
             >
               {tab}
             </button>
           ))}
         </div>
         <div className="p-4 border rounded-b">
-          {activeTab === 0 && (
+          {activeTab === "Expense" && (
             <form className="space-y-4">
               <EditExpense />
             </form>
           )}
 
-          {activeTab === 1 && (
+          {activeTab === "Transfer" && (
             <form className="space-y-4">
               <EditTransfer />
             </form>
           )}
 
-          {activeTab === 2 && (
+          {activeTab === "Income" && (
             <form className="space-y-4">
               <EditIncome />
             </form>

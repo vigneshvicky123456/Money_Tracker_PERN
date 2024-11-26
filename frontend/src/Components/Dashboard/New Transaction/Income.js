@@ -126,7 +126,7 @@ const Income = () => {
               Amount is required
             </span>
           )}
-          <span className="p-[10px] pl-[28.5px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {newIncome.toCode}
           </span>
         </div>

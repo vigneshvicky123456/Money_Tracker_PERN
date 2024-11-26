@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allNewTransactions } from "../../features/newTransactionsSlice";
-import EditModal from "../Transactions/EditModal";
+import { allNewTransactions, getSingleNewTransaction } from "../../features/newTransactionsSlice";
+import EditModal from "../Transactions/Edit Transaction/EditModal";
 
 const RecentTransactions = () => {
   const dispatch = useDispatch();
   const { newTransactions } = useSelector((state) => state.newTransaction);
-  console.log("selector newTransaction: ", newTransactions);
+  //console.log("selector newTransaction: ", newTransactions);
 
   const [editTransModal, setEditTransModal] = useState(false);
   
-  const editTransShow = () => {
+  const showTransModal = (id) => {
+    dispatch(getSingleNewTransaction(id));
+    
     setEditTransModal(true);
-  }
+  };
 
   useEffect(() => {
     dispatch(allNewTransactions());
@@ -103,7 +105,7 @@ const RecentTransactions = () => {
                   </span>
                   <button 
                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                     onClick={editTransShow}
+                     onClick={() => showTransModal(history.id)}
                   >
                     Edit
                   </button>

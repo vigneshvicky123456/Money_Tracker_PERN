@@ -1,12 +1,31 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allAccounts } from "../../../features/accountsSlice";
-//import { addNewTransaction } from "../../../features/newTransactionsSlice";
-
+import { updateNewTransaction } from "../../../features/newTransactionsSlice";
 
 const EditExpense = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { accounts } = useSelector((state) => state.account);
+  const selectedNewTransaction = useSelector(
+    (state) => state.newTransaction.selectedNewTransaction
+  );
+
+  const [showError, setShowError] = useState(false);
+
+  const editExpenseState = {
+    id: 0,
+    type: "Expense",
+    fromName: "",
+    fromNameId: "",
+    fromAmount: 0,
+    fromCode: "",
+    tag: "",
+    date: new Date().toISOString().slice(0, 10),
+    note: "",
+  };
+
+  const [editExpense, setEditExpense] = useState(editExpenseState);
+  //console.log('editExpense',editExpense);
 
   const tagOptions = [
     { id: 1, label: "Food", value: "food" },
@@ -23,19 +42,78 @@ const EditExpense = () => {
 
   useEffect(() => {
     dispatch(allAccounts());
-  }, [dispatch]);
+
+    if (selectedNewTransaction) {
+      setEditExpense({
+        id: selectedNewTransaction.id,
+        type: selectedNewTransaction.transaction_type,
+        fromName: selectedNewTransaction.transaction_from_name,
+        fromAmount: selectedNewTransaction.transaction_from_amount,
+        fromCode: selectedNewTransaction.transaction_from_code,
+        tag: selectedNewTransaction.transaction_tag,
+        date: selectedNewTransaction.transaction_date,
+        note: selectedNewTransaction.transaction_note,
+      });
+    }
+  }, [dispatch, selectedNewTransaction]);
+
+  const editAccountExpenseChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "fromNameId") {
+      const selectedAccount = accounts.find(
+        (acc) => acc.id.toString() === value
+      );
+      setEditExpense((prevData) => ({
+        ...prevData,
+        [name]: value,
+        fromName: selectedAccount ? selectedAccount.account_name : "",
+        fromCode: selectedAccount ? selectedAccount.account_currency_code : "",
+      }));
+    } else {
+      setEditExpense((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+  const saveEditExpense = (e) => {
+    e.preventDefault();
+    if (!editExpense.fromAmount) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      dispatch(
+        updateNewTransaction({
+          id: editExpense.id,
+          transaction_type: editExpense.type,
+          transaction_from_name: editExpense.fromName,
+          transaction_from_amount: editExpense.fromAmount,
+          transaction_from_code: editExpense.fromCode,
+          transaction_to_name: "",
+          transaction_to_amount: 0,
+          transaction_to_code: "",
+          transaction_tag: editExpense.tag,
+          transaction_note: editExpense.note,
+          transaction_date: editExpense.date,
+        })
+      );
+      console.log("saveEditExpense ", editExpense);
+      setEditExpense(editExpenseState);
+    }
+  };
 
   return (
     <div>
-        <div className="flex">
+      <div className="flex">
         <div className="relative">
           <label className="text-sm font-medium text-black-400">From</label>
           <select
             className="block border flex rounded p-[7px] mt-[5px] w-[367px] text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
             id="dropdown"
             name="fromNameId"
-            //onChange={accountExpenseChange}
-            //value={newExpense.fromNameId}
+            onChange={editAccountExpenseChange}
+            value={editExpense.fromNameId}
           >
             {accounts.map((accdata) => (
               <option
@@ -55,11 +133,16 @@ const EditExpense = () => {
             className="w-[89px] p-[6px] rounded-l focus:border-blue-400 focus:outline-none"
             type="number"
             name="fromAmount"
-            //onChange={accountExpenseChange}
-            //value={newExpense.fromAmount}
+            onChange={editAccountExpenseChange}
+            value={editExpense.fromAmount}
           />
-          <span className="p-[10px] px-[25px]  text-gray-700 text-sm bg-gray-300 rounded-r">
-            {/* {newExpense.fromCode} */}
+          {showError && (
+            <span className="absolute top-[-30px] left-0 bg-red-500 text-white text-xs px-2 py-1 rounded shadow-md">
+              Amount is required
+            </span>
+          )}
+          <span className="p-[10px] px-[24px]  text-gray-700 text-sm bg-gray-300 rounded-r">
+            {editExpense.fromCode}
           </span>
         </div>
       </div>
@@ -71,8 +154,8 @@ const EditExpense = () => {
             id="dropdown"
             name="tag"
             placeholder="Choose existing tags or add new"
-            //onChange={accountExpenseChange}
-            //value={newExpense.tag}
+            onChange={editAccountExpenseChange}
+            value={editExpense.tag}
           >
             <option className="text-sm text-gray-300">
               Choose existing tags
@@ -93,8 +176,8 @@ const EditExpense = () => {
             className="w-[151px] p-[7px] text-sm rounded focus:outline-none"
             type="date"
             name="date"
-            //value={newExpense.date}
-            //onChange={accountExpenseChange}
+            value={editExpense.date}
+            onChange={editAccountExpenseChange}
           />
         </div>
       </div>
@@ -105,23 +188,22 @@ const EditExpense = () => {
             type="text"
             placeholder="Note"
             name="note"
-           // value={newExpense.note}
-           // onChange={accountExpenseChange}
+            value={editExpense.note}
+            onChange={editAccountExpenseChange}
           />
         </div>
         <div className="relative mt-[5px] ml-[14px] border rounded">
           <button
             className="w-[151px] p-[7px] text-white bg-blue-800 text-sm rounded"
             type="button"
-           // onClick={saveExpense}
+            onClick={saveEditExpense}
           >
             Add Expense
           </button>
         </div>
       </div>
-      
     </div>
-  )
-}
+  );
+};
 
 export default EditExpense;

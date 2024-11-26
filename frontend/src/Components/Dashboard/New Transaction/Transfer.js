@@ -146,7 +146,7 @@ const Transfer = () => {
               Amount is required
             </span>
           )}
-          <span className="p-[10px] pl-[28.5px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {newTransfer.fromCode}
           </span>
         </div>
@@ -181,7 +181,7 @@ const Transfer = () => {
             value={newTransfer.toAmount}
             onChange={accountTransferChange}
           />
-          <span className="p-[10px] pl-[28.5px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {newTransfer.toCode}
           </span>
         </div>

@@ -12,7 +12,7 @@ export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransac
 // Get Single newTransactions
 export const getSingleNewTransaction = createAsyncThunk('newTransaction/getSingleNewTransaction', async (id) => {
     const response = await axios.get(`http://localhost:3003/newTransactions/${id}`);
-   // console.log('ASYNC single newTransactions ',response.data);
+    console.log('ASYNC single newTransactions ',response.data);
     return response.data;
 });
 
@@ -84,6 +84,17 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
         transaction_note,
         transaction_date
     });
+    console.log('ASYNC Update  ', 
+        transaction_type,
+        transaction_from_name, 
+        transaction_from_amount,
+        transaction_from_code, 
+        transaction_to_name, 
+        transaction_to_amount, 
+        transaction_to_code, 
+        transaction_tag,
+        transaction_note,
+        transaction_date);
     return response.data;
 });
 
@@ -107,7 +118,9 @@ const newTransactionSlice = createSlice({
                 state.newTransactions = action.payload;
             })
             .addCase(getSingleNewTransaction.fulfilled, (state, action) => {
-                state.selectedNewTransaction = action.payload;   
+                state.selectedNewTransaction = action.payload;  
+                console.log("slice getSingleNewTransaction: ",state.selectedNewTransaction);
+                 
             })
             .addCase(addNewTransaction.fulfilled, (state, action) => {
                 state.newTransactions.push(action.payload);
@@ -117,6 +130,8 @@ const newTransactionSlice = createSlice({
             .addCase(updateNewTransaction.fulfilled, (state, action) => {
                 const index = state.newTransactions.findIndex(c => c.id === action.payload.id);
                 if (index !== -1) state.newTransactions[index] = action.payload;
+                console.log('slice updateNewTransaction',state.newTransactions);
+                
             })
             .addCase(deleteNewTransaction.fulfilled, (state, action) => {
                 state.newTransactions = state.newTransactions.filter(c => c.id !== action.payload);
