@@ -3,11 +3,11 @@ import axios from 'axios';
 
 // Thunks API requests
 
-// Get All newTransactions
-export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransactions', async () => {
-    const response = await axios.get(`http://localhost:3003/newTransactions`);
-    return response.data;
-});
+// // Get All newTransactions
+// export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransactions', async () => {
+//     const response = await axios.get(`http://localhost:3003/newTransactions`);
+//     return response.data;
+// });
 
 // Get Single newTransactions
 export const getSingleNewTransaction = createAsyncThunk('newTransaction/getSingleNewTransaction', async (id) => {
@@ -114,9 +114,9 @@ const newTransactionSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(allNewTransactions.fulfilled, (state, action) => {
-                state.newTransactions = action.payload;
-            })
+            // .addCase(allNewTransactions.fulfilled, (state, action) => {
+            //     state.newTransactions = action.payload;
+            // })
             .addCase(getSingleNewTransaction.fulfilled, (state, action) => {
                 state.selectedNewTransaction = action.payload;  
                 console.log("slice getSingleNewTransaction: ",state.selectedNewTransaction);

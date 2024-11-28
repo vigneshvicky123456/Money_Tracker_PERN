@@ -6,17 +6,9 @@ const currencyModel = require('../models/currenciesModal');
 // Get the selected currency
 
 router.get('/', async (req, res) => {
-   // const { id } = req.params;
   try {
     const selectedCurrency = await selectedCurrencyModal.findOne({ order: [['id', 'DESC']],
-      //req.body, { where: { id } }
       include:'currencyModel'
-      // include:[{
-      //    modal: currencyModel, 
-      //    as: 'currencyModel',
-      //   attributes: ['id', 'currency_name', 'currency_code', 'currency_value'],
-      //  },
-      // ],
     });
     if (selectedCurrency) {
       res.json(selectedCurrency);

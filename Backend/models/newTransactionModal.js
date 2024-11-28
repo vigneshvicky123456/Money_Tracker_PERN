@@ -47,7 +47,7 @@ newTransactionModel.init(
             allowNull: false,
         },
         transaction_date: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false,
         },
     },

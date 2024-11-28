@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allAccounts } from "../../../features/accountsSlice";
-import { updateNewTransaction } from "../../../features/newTransactionsSlice";
+import {
+  updateNewTransaction,
+  deleteNewTransaction,
+} from "../../../features/newTransactionsSlice";
 
 const EditIncome = () => {
   const dispatch = useDispatch();
@@ -95,6 +98,10 @@ const EditIncome = () => {
     }
   };
 
+  const deleteTransactionById = (id) => {
+    dispatch(deleteNewTransaction(id));
+  };
+
   return (
     <div>
       <div className="flex">
@@ -132,7 +139,7 @@ const EditIncome = () => {
               Amount is required
             </span>
           )}
-          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[7px] pl-[28px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {editIncome.toCode}
           </span>
         </div>
@@ -172,7 +179,7 @@ const EditIncome = () => {
           />
         </div>
       </div>
-      <div className="mt-2 flex">
+      <div className="mt-2 flex pb-3">
         <div className="relative">
           <input
             className="block border flex mt-[5px] rounded p-[7px] w-[367px] text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
@@ -192,6 +199,14 @@ const EditIncome = () => {
             Add Income
           </button>
         </div>
+      </div>
+      <div className="border-t px-1 pt-4 flex justify-end">
+        <button
+          className="border rounded bg-red-600 py-2 px-4 text-white hover:bg-red-700 focus:outline-none"
+          onClick={() => deleteTransactionById(selectedNewTransaction.id)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

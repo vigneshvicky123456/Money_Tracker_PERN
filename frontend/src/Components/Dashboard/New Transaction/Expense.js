@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allAccounts } from "../../../features/accountsSlice";
+import { allAccounts, updateAccount } from "../../../features/accountsSlice";
 import { addNewTransaction } from "../../../features/newTransactionsSlice";
 
 const Expense = () => {
@@ -18,6 +18,12 @@ const Expense = () => {
     tag: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
+    accountId: 0,
+    accountGroup: "",
+    accountBalance: "",
+    accountCurrency: "",
+    accountCheck: false,
+    accountDashboard: false,
   };
 
   const [newExpense, setNewExpense] = useState(newExpenseState);
@@ -60,8 +66,14 @@ const Expense = () => {
       setNewExpense((prevData) => ({
         ...prevData,
         [name]: value,
+        accountId: selectedAccount ? selectedAccount.id : 0,
         fromName: selectedAccount ? selectedAccount.account_name : "",
         fromCode: selectedAccount ? selectedAccount.account_currency_code : "",
+        accountGroup: selectedAccount ? selectedAccount.account_type : "",
+        accountBalance: selectedAccount ? selectedAccount.account_balance : "",
+        accountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+        accountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+        accountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
       }));
     } else {
       setNewExpense((prevData) => ({
@@ -89,6 +101,19 @@ const Expense = () => {
           transaction_tag: newExpense.tag,
           transaction_note: newExpense.note,
           transaction_date: newExpense.date,
+        })
+      );
+      const subAmount = newExpense.accountBalance - newExpense.fromAmount;
+      dispatch(
+        updateAccount({
+          id: newExpense.accountId,
+          account_name: newExpense.fromName,
+          account_type: newExpense.accountGroup,
+          account_balance: subAmount,
+          account_currency_code: newExpense.fromCode,
+          account_currency_name: newExpense.accountCurrency,
+          account_currency_name_check: newExpense.accountCheck,
+          show_on_dashboard: newExpense.accountDashboard,
         })
       );
       console.log("saveExpense ", newExpense);

@@ -19,11 +19,9 @@ sequelize.sync({ alter: true }) // Use { alter: true } to update tables without 
 // import routes
 const currencyRoutes = require("./routes/currencies");
 const accountRoutes = require("./routes/accounts");
-const expenseRoutes = require("./routes/expenses");
-const transferRoutes = require("./routes/transfer");
-const incomeRoutes = require("./routes/income");
 const selectedCurrencyRoutes = require("./routes/selectedCurrency");
 const newTransactionRoutes = require("./routes/newTransactions");
+const filterByDateRoutes = require("./routes/filterByDate");
 
 //Mildware
 const app = express();
@@ -33,11 +31,9 @@ app.use(cors());
 //Routes
 app.use("/currencies",currencyRoutes);
 app.use("/accounts",accountRoutes);
-app.use("/expenses",expenseRoutes);
-app.use("/transfer",transferRoutes);
-app.use("/income",incomeRoutes);
 app.use("/selectedCurrency",selectedCurrencyRoutes);
 app.use("/newTransactions",newTransactionRoutes);
+app.use("/filterByDate",filterByDateRoutes);
 
 sequelize.sync()
     .then(() => {

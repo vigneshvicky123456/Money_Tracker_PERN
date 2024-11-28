@@ -1,12 +1,20 @@
 import { React, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NewModal from "../Components/Transactions/NewModal";
 import RecentTransactions from "../Components/Dashboard/RecentTransactions";
+import { setFilter } from '../features/filterByDateSlice';
 
 const Transactions = () => {
+  const dispatch = useDispatch();
+  const { filter } = useSelector((state) => state.filterByDate);
   const { newTransactions } = useSelector((state) => state.newTransaction);
   const [newTransModal, setNewTransModal] = useState(false);
-  
+
+  const handleFilterChange = (e) => {
+    dispatch(setFilter(e.target.value));
+    console.log('handleFilterChange',e.target.value);
+};
+
   const calculateTotals = () => {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -41,10 +49,10 @@ const Transactions = () => {
       </div>
       <div className="bg-gray-100 pt-[80px] h-screen overflow-y-scroll">
         <div className="mx-[99px] border shadow-custom bg-white w-[84%] h-[full] rounded">
-          <div className="border-b p-[15px] bg-gray-50">
+          <div className="border-b p-[15px] bg-gray-50 flex">
             <div>
               <button
-                className="border border-gray-300 bg-white rounded flex w-[115px]"
+                className="border border-gray-300 bg-white rounded-l flex w-[115px]"
                 type="button"
                 onClick={() => setNewTransModal(true)}
               >
@@ -58,7 +66,23 @@ const Transactions = () => {
                 onClose={setNewTransModal}
               />
             </div>
+            <div className="relative">
+              <select
+                className="p-[8px] border border-gray-300 px-5 text-sm"
+                value={filter}
+                onChange={handleFilterChange}
+              >
+                <option value="all">All Transactions</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last7days">Last 7 Days</option>
+                {/* <option value="last30days">Last 30 Days</option> */}
+                <option value="thismonth">This Month</option>
+                {/* <option value="custom">Custom Date</option> */}
+              </select>
+            </div>
           </div>
+
           <div className="w-[100%] bg-white">
             <RecentTransactions />
           </div>
@@ -79,8 +103,7 @@ const Transactions = () => {
                   : "text-red-500 flex p-3 justify-end"
               }
             >
-              {parseFloat(balance) < 0 ? `-${balance}` : `${balance}`}{" "}
-              USD
+              {parseFloat(balance) } USD
             </span>
           </div>
         </div>

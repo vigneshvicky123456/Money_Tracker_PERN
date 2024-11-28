@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allAccounts } from "../../../features/accountsSlice";
+import { allAccounts, updateAccount } from "../../../features/accountsSlice";
 import { addNewTransaction } from "../../../features/newTransactionsSlice";
 
 const Income = () => {
@@ -18,6 +18,13 @@ const Income = () => {
     tag: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
+
+    toAccountId: 0,
+    toAccountGroup: "",
+    toAccountBalance: 0,
+    toAccountCurrency: "",
+    toAccountCheck: false,
+    toAccountDashboard: false,
   };
 
   const [newIncome, setNewIncome] = useState(newIncomeState);
@@ -53,8 +60,14 @@ const Income = () => {
       setNewIncome((prevData) => ({
         ...prevData,
         [name]: value,
+        toAccountId: selectedAccount ? selectedAccount.id : 0,
         toName: selectedAccount ? selectedAccount.account_name : "",
         toCode: selectedAccount ? selectedAccount.account_currency_code : "",
+        toAccountGroup: selectedAccount ? selectedAccount.account_type : "",
+        toAccountBalance: selectedAccount ? selectedAccount.account_balance : 0,
+        toAccountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+        toAccountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+        toAccountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
       }));
     } else {
       setNewIncome((prevData) => ({
@@ -82,6 +95,19 @@ const Income = () => {
           transaction_tag: newIncome.tag,
           transaction_note: newIncome.note,
           transaction_date: newIncome.date,
+        })
+      );
+      const addAmount = parseInt(newIncome.toAccountBalance) + parseInt(newIncome.toAmount);
+      dispatch(
+        updateAccount({
+          id: newIncome.toAccountId,
+          account_name: newIncome.toName,
+          account_type: newIncome.toAccountGroup,
+          account_balance: addAmount,
+          account_currency_code: newIncome.toCode,
+          account_currency_name: newIncome.toAccountCurrency,
+          account_currency_name_check: newIncome.toAccountCheck,
+          show_on_dashboard: newIncome.toAccountDashboard,
         })
       );
       console.log("saveIncome ", newIncome);

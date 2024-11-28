@@ -58,6 +58,17 @@ export const updateAccount = createAsyncThunk('account/updateAccount', async ({
         account_currency_name_check, 
         show_on_dashboard
     });
+    console.log('ASYNC Update Account in accountSlice ',
+        id,
+        account_name,
+        account_type, 
+        account_balance,
+        account_currency_code, 
+        account_currency_name, 
+        account_currency_name_check, 
+        show_on_dashboard
+    );
+    
     return response.data;
 });
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allAccounts } from "../../../features/accountsSlice";
+import { allAccounts, updateAccount } from "../../../features/accountsSlice";
 import { addNewTransaction } from "../../../features/newTransactionsSlice";
 
 const Transfer = () => {
@@ -21,6 +21,20 @@ const Transfer = () => {
     toCode: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
+
+    accountId: 0,
+    accountGroup: "",
+    accountBalance: 0,
+    accountCurrency: "",
+    accountCheck: false,
+    accountDashboard: false,
+
+    toAccountId: 0,
+    toAccountGroup: "",
+    toAccountBalance: 0,
+    toAccountCurrency: "",
+    toAccountCheck: false,
+    toAccountDashboard: false,
   };
 
   const [newTransfer, setNewTransfer] = useState(newTransferState);
@@ -62,8 +76,14 @@ const Transfer = () => {
       setNewTransfer((prevData) => ({
         ...prevData,
         [name]: value,
+        accountId: selectedAccount ? selectedAccount.id : 0,
         fromName: selectedAccount ? selectedAccount.account_name : "",
         fromCode: selectedAccount ? selectedAccount.account_currency_code : "",
+        accountGroup: selectedAccount ? selectedAccount.account_type : "",
+        accountBalance: selectedAccount ? selectedAccount.account_balance : "",
+        accountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+        accountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+        accountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
       }));
     } else if (name === "toNameId") {
       const selectedAccount = accounts.find(
@@ -72,8 +92,14 @@ const Transfer = () => {
       setNewTransfer((prevData) => ({
         ...prevData,
         [name]: value,
+        toAccountId: selectedAccount ? selectedAccount.id : 0,
         toName: selectedAccount ? selectedAccount.account_name : "",
         toCode: selectedAccount ? selectedAccount.account_currency_code : "",
+        toAccountGroup: selectedAccount ? selectedAccount.account_type : "",
+        toAccountBalance: selectedAccount ? selectedAccount.account_balance : 0,
+        toAccountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+        toAccountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+        toAccountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
       }));
     } else {
       setNewTransfer((prevData) => ({
@@ -101,6 +127,32 @@ const Transfer = () => {
           transaction_tag: "",
           transaction_note: newTransfer.note,
           transaction_date: newTransfer.date,
+        })
+      );
+      const subAmount = newTransfer.accountBalance - newTransfer.fromAmount;
+      dispatch(
+        updateAccount({
+          id: newTransfer.accountId,
+          account_name: newTransfer.fromName,
+          account_type: newTransfer.accountGroup,
+          account_balance: subAmount,
+          account_currency_code: newTransfer.fromCode,
+          account_currency_name: newTransfer.accountCurrency,
+          account_currency_name_check: newTransfer.accountCheck,
+          show_on_dashboard: newTransfer.accountDashboard,
+        })
+      );
+      const addAmount = parseInt(newTransfer.toAccountBalance)  + parseInt(newTransfer.toAmount);
+      dispatch(
+        updateAccount({
+          id: newTransfer.toAccountId,
+          account_name: newTransfer.toName,
+          account_type: newTransfer.toAccountGroup,
+          account_balance: addAmount,
+          account_currency_code: newTransfer.toCode,
+          account_currency_name: newTransfer.toAccountCurrency,
+          account_currency_name_check: newTransfer.toAccountCheck,
+          show_on_dashboard: newTransfer.toAccountDashboard,
         })
       );
       console.log("saveTransfer ", newTransfer);

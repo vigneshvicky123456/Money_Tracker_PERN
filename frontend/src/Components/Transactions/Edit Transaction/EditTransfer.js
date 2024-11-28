@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allAccounts } from "../../../features/accountsSlice";
-import { updateNewTransaction } from "../../../features/newTransactionsSlice";
+import { updateNewTransaction, deleteNewTransaction } from "../../../features/newTransactionsSlice";
 
 const EditTransfer = () => {
     const dispatch = useDispatch();
@@ -104,6 +104,10 @@ const EditTransfer = () => {
         }
       };  
 
+      const deleteTransactionById = (id) => {
+        dispatch(deleteNewTransaction(id));
+      };    
+
   return (
     <div>
       <div className="flex">
@@ -142,7 +146,7 @@ const EditTransfer = () => {
               Amount is required
             </span>
           )}
-          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[7px] pl-[28px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {editTransfer.fromCode}
           </span>
         </div>
@@ -177,7 +181,7 @@ const EditTransfer = () => {
             value={editTransfer.toAmount}
             onChange={editAccountTransferChange}
           />
-          <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">
+          <span className="p-[7px] pl-[28px] text-gray-700 text-sm bg-gray-300 rounded-r">
             {editTransfer.toCode}
           </span>
         </div>
@@ -203,7 +207,7 @@ const EditTransfer = () => {
           />
         </div>
       </div>
-      <div className="relative mt-3 pb-8">
+      <div className="relative mt-3 pb-12">
         <div className=" w-[151px] mt-[5px] ml-[14px] rounded">
           <button
             className="absolute top-0 right-0 p-[7px] w-[151px] text-white bg-blue-800 text-sm border rounded"
@@ -214,6 +218,14 @@ const EditTransfer = () => {
           </button>
         </div>
       </div>
+      <div className="border-t px-1 pt-4 flex justify-end">
+          <button 
+            className="border rounded bg-red-600 py-2 px-4 text-white hover:bg-red-700 focus:outline-none"
+            onClick={() => deleteTransactionById(selectedNewTransaction.id)}
+          >
+            Delete
+          </button>
+        </div>
     </div>
   )
 }
