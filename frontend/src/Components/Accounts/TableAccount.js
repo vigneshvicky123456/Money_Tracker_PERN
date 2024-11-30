@@ -6,13 +6,13 @@ import EditAccount from "./EditAccount";
 const TableAccount = () => {
   const dispatch = useDispatch();
   const { accounts } = useSelector((state) => state.account);
-
+  const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
   const [editModal, setEditModal] = useState(false);
   const [visibleTables, setVisibleTables] = useState({});
 
   useEffect(() => {
     dispatch(allAccounts());
-  }, [dispatch]);
+  }, [dispatch, currencyModel1?.currencyModel?.id]);
 
   const showEditModal = (id) => {
     dispatch(getSingleAccount(id));
@@ -20,7 +20,6 @@ const TableAccount = () => {
   };
 
   const groupedAccounts = accounts.reduce((acc, account) => {
-    
     if (!acc[account.account_type]) {
       acc[account.account_type] = [];
     }
@@ -29,12 +28,12 @@ const TableAccount = () => {
   }, {});
 
   const totalBalances = {};
-for (const [type, accounts] of Object.entries(groupedAccounts)) {
-  totalBalances[type] = accounts.reduce(
-    (sum, account) => sum + Number(account.account_balance || 0),
-    0
-  );
-}
+  for (const [type, accounts] of Object.entries(groupedAccounts)) {
+    totalBalances[type] = accounts.reduce(
+      (sum, account) => sum + Number(account.account_balance || 0),
+      0
+    );
+  }
 
   const toggleTable = (type) => {
     setVisibleTables((prev) => ({
@@ -52,9 +51,14 @@ for (const [type, accounts] of Object.entries(groupedAccounts)) {
             onClick={() => toggleTable(type)}
           >
             <h2 className="text-lg font-semibold">{type}</h2>
-            <span className="text-green-600">
-               {totalBalances[type]}  USD
-               {/* {accdata.account_currency_code} */}
+            <span
+              className={
+                parseInt(totalBalances[type]) >= 0
+                  ? "text-green-500 flex  justify-end"
+                  : "text-red-500 flex  justify-end"
+              }
+            >
+              {parseInt(totalBalances[type])} {currencyModel1.currencyModel?.currency_code}
             </span>
           </div>
           {visibleTables[type] && (
@@ -62,9 +66,17 @@ for (const [type, accounts] of Object.entries(groupedAccounts)) {
               {groupedAccounts[type].map((accdata) => (
                 <div key={accdata.id}>
                   <div className="py-[9px] px-[15px] flex justify-between items-center border-b">
-                    <span>{accdata.account_name}</span>
+                    <span className="text-blue-500">{accdata.account_name}</span>
                     <div>
-                      <span>{accdata.account_balance} {accdata.account_currency_code}</span>
+                      <span
+                        className={
+                          parseFloat(accdata.account_balance) >= 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }
+                      >
+                        {parseFloat(accdata.account_balance)} {accdata.account_currency_code ? accdata.account_currency_code :'NAN' }
+                      </span>
                       <button
                         className="border border-gray-300 m-1 rounded px-2 py-1"
                         type="button"

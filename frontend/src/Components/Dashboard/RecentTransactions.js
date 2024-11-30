@@ -6,7 +6,17 @@ import { FilteredTransactionsByDate } from "../../features/filterByDateSlice";
 
 const RecentTransactions = () => {
   const dispatch = useDispatch();
-  const filteredTransactions = useSelector((state) => state.filterByDate.filteredTransactions);
+  //const filteredTransactions = useSelector((state) => state.filterByDate.filteredTransactions);
+  
+  const filteredTransactions = useSelector((state) =>
+        Array.isArray(state.filterByDate.filteredTransactions)
+          ? state.filterByDate.filteredTransactions
+          : []
+      );
+
+      console.log('useSelector RecentTransactions',filteredTransactions);
+      
+  
   const { filter } = useSelector((state) => state.filterByDate);
 
   const [editTransModal, setEditTransModal] = useState(false);
@@ -18,7 +28,8 @@ const RecentTransactions = () => {
 
   useEffect(() => {
     dispatch(FilteredTransactionsByDate(filter));
-  }, [dispatch, filter]);
+    dispatch(FilteredTransactionsByDate())
+  }, [dispatch, filter,filteredTransactions?.transactions]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -52,7 +63,8 @@ const RecentTransactions = () => {
     <div className="w-full h-auto">
       <div>
         <ul>
-          {filteredTransactions.map((history) => (
+          {"Hello"+console.log(filteredTransactions)}
+          {filteredTransactions?.transactions?.map((history) => (
             <li key={history.id} className="p-3 border-b">
               <div className="flex justify-between text-sm items-center">
                 <div className="flex space-x-4">
@@ -110,7 +122,7 @@ const RecentTransactions = () => {
                 </div>
               </div>
             </li>
-          ))};
+          ))}
         </ul>
       </div>
     </div>
@@ -118,3 +130,4 @@ const RecentTransactions = () => {
 };
 
 export default RecentTransactions;
+

@@ -6,41 +6,16 @@ import { setFilter } from '../features/filterByDateSlice';
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { filter } = useSelector((state) => state.filterByDate);
-  const { newTransactions } = useSelector((state) => state.newTransaction);
+  const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
+  const { filter, filteredTransactions } = useSelector((state) => state.filterByDate);
+  //const { newTransactions } = useSelector((state) => state.newTransaction);
   const [newTransModal, setNewTransModal] = useState(false);
 
   const handleFilterChange = (e) => {
     dispatch(setFilter(e.target.value));
-    console.log('handleFilterChange',e.target.value);
+    //console.log('handleFilterChange',e.target.value);
 };
 
-  const calculateTotals = () => {
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    newTransactions.forEach((history) => {
-      const amount = parseFloat(
-        history.transaction_from_amount !== "0"
-          ? history.transaction_from_amount
-          : history.transaction_to_amount
-      );
-
-      if (history.transaction_type === "Income") {
-        totalIncome += amount;
-      } else if (history.transaction_type === "Expense") {
-        totalExpense += amount;
-      }
-    });
-
-    return {
-      totalIncome: totalIncome.toFixed(2),
-      totalExpense: totalExpense.toFixed(2),
-      balance: (totalIncome - totalExpense).toFixed(2),
-    };
-  };
-
-  const { totalIncome, totalExpense, balance } = calculateTotals();
 
   return (
     <div>
@@ -68,7 +43,7 @@ const Transactions = () => {
             </div>
             <div className="relative">
               <select
-                className="p-[8px] border border-gray-300 px-5 text-sm"
+                className="p-[8px] border border-gray-300 px-5 text-gray-500 text-sm focus:outline-none"
                 value={filter}
                 onChange={handleFilterChange}
               >
@@ -76,7 +51,7 @@ const Transactions = () => {
                 <option value="today">Today</option>
                 <option value="yesterday">Yesterday</option>
                 <option value="last7days">Last 7 Days</option>
-                {/* <option value="last30days">Last 30 Days</option> */}
+                <option value="last30days">Last 30 Days</option>
                 <option value="thismonth">This Month</option>
                 {/* <option value="custom">Custom Date</option> */}
               </select>
@@ -90,20 +65,20 @@ const Transactions = () => {
           <div className="ml-[560px] w-[40%]">
             <div className="flex p-3 border-b justify-between ">
               <h1>Total income</h1>
-              <span className="text-green-500">{totalIncome} USD</span>
+              <span className="text-green-500">{filteredTransactions?.totalIncome} {currencyModel1.currencyModel?.currency_code}</span>
             </div>
             <div className="flex p-3 border-b justify-between">
               <h1>Total expense</h1>
-              <span className="text-red-500">{totalExpense} USD</span>
+              <span className="text-red-500">{filteredTransactions?.totalExpense} {currencyModel1.currencyModel?.currency_code}</span>
             </div>
             <span
               className={
-                parseFloat(balance) >= 0
+                parseFloat(filteredTransactions?.balance) >= 0
                   ? "text-green-500 flex p-3 justify-end"
                   : "text-red-500 flex p-3 justify-end"
               }
             >
-              {parseFloat(balance) } USD
+              {parseFloat(filteredTransactions?.balance) } {currencyModel1.currencyModel?.currency_code}
             </span>
           </div>
         </div>

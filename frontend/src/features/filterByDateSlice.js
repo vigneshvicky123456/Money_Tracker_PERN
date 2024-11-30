@@ -1,11 +1,13 @@
-// features/itemsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Thunk for fetching filtered items
-export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchFilteredItems", async (filter) => {
+// Thunks API requests
+
+// FilteredTransactionsByDate
+export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchFilteredItems", async (filter, { rejectWithValue }) => {
     const response = await axios.get(`http://localhost:3003/filterByDate/?filter=${filter}`);
-    console.log("ASYNC filtered item ", filter);
+    console.log("ASYNC filtered item filter", filter);
+    console.log("ASYNC filtered item response.data", response.data);
     return response.data;
   }
 );

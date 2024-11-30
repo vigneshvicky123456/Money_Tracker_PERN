@@ -45,9 +45,14 @@ const NetWorth = () => {
             onClick={() => toggleTable(type)}
           >
             <h2 className="text-lg font-semibold">{type}</h2>
-            <span className="text-green-600">
-              {totalBalances[type]}{" "}
-              {currencyModel1.currencyModel?.currency_code}
+            <span
+              className={
+                parseInt(totalBalances[type]) >= 0
+                  ? "text-green-500 flex  justify-end"
+                  : "text-red-500 flex  justify-end"
+              }
+            >
+              {parseInt(totalBalances[type])} {currencyModel1.currencyModel?.currency_code}
             </span>
           </div>
           {visibleTables[type] && (
@@ -59,9 +64,14 @@ const NetWorth = () => {
                       {accdata.account_name}
                     </span>
                     <div>
-                      <span>
-                        {accdata.account_balance}{" "}
-                        {accdata.account_currency_code}
+                    <span
+                        className={
+                          parseFloat(accdata.account_balance) >= 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }
+                      >
+                        {parseFloat(accdata.account_balance)} {accdata.account_currency_code ? accdata.account_currency_code :'NAN' }
                       </span>
                     </div>
                   </div>
