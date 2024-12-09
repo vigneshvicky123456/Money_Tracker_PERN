@@ -7,7 +7,6 @@ const PORT = 3003;
 // import models
 const { currencyModel, selectedCurrencyModal } = require("./models/index")
 
-
 // sync models
 sequelize.sync({ alter: true }) // Use { alter: true } to update tables without dropping them
   .then(() => {
@@ -22,6 +21,8 @@ const accountRoutes = require("./routes/accounts");
 const selectedCurrencyRoutes = require("./routes/selectedCurrency");
 const newTransactionRoutes = require("./routes/newTransactions");
 const filterByDateRoutes = require("./routes/filterByDate");
+const expenseIncomeChartRoutes = require("./routes/Reports/expense_incomechart");
+const expensebyTagsChartRoutes = require("./routes/Reports/expensebytagschart");
 
 //Mildware
 const app = express();
@@ -34,6 +35,8 @@ app.use("/accounts",accountRoutes);
 app.use("/selectedCurrency",selectedCurrencyRoutes);
 app.use("/newTransactions",newTransactionRoutes);
 app.use("/filterByDate",filterByDateRoutes);
+app.use("/reports",expenseIncomeChartRoutes);
+app.use("/reports",expensebyTagsChartRoutes);
 
 sequelize.sync()
     .then(() => {

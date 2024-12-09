@@ -2,13 +2,15 @@ const express = require("express");
 const router = express.Router();
 const { Op } = require("sequelize");
 const newTransactionModel = require("../models/newTransactionModal");
+const accountModel = require("../models/accountsModal"); 
 const moment = require("moment");
 
 router.get("/", async (req, res) => {
   try {
-    const { filter } = req.query;
+    const { filter, accountId, transaction_tag } = req.query;
     let startDate, endDate;
 
+    // Set date ranges based on the filter
     switch (filter) {
       case "today":
         startDate = moment().format("YYYY-MM-DD");
@@ -36,37 +38,53 @@ router.get("/", async (req, res) => {
         endDate = moment().format("YYYY-MM-DD");
         break;
     }
-
+    
     console.log(`Fetching transactions from ${startDate} to ${endDate}`);
 
-    // Fetch transactions within the specified date range
-    const transactions = await newTransactionModel.findAll({
+    // Default run this filter
+    const queryOptions = {
       where: {
         transaction_date: {
           [Op.gte]: startDate,
           [Op.lte]: endDate,
         },
       },
-    });
+    };
+
+    // Add filter by accountId if provided
+    if (accountId) {
+      queryOptions.where.account_id = accountId;
+    }
+
+    // Add filter by transaction_tag if provided
+    if (transaction_tag) {
+      queryOptions.where.transaction_tag = transaction_tag;
+    }
+
+    const transactions = await newTransactionModel.findAll(queryOptions);
 
     let totalIncome = 0;
     let totalExpense = 0;
 
+    // Calculate totalIncome and totalExpense
     transactions.forEach((transaction) => {
-      const amount = parseFloat(
-        transaction.transaction_from_amount !== "0"
-          ? transaction.transaction_from_amount
-          : transaction.transaction_to_amount
-      );
+      const toAmount = parseFloat(transaction.transaction_to_amount) || 0;
+      const fromAmount = parseFloat(transaction.transaction_from_amount) || 0;
 
-      if (transaction.transaction_type === "Income") {
-        totalIncome += amount;
-      } else if (transaction.transaction_type === "Expense") {
-        totalExpense += amount;
-      }
+      totalIncome += toAmount;
+      totalExpense += fromAmount;
     });
 
     const balance = totalIncome - totalExpense;
+
+    // Fetch account details if accountId is provided
+    let accountDetails = null;
+    if (accountId) {
+      accountDetails = await accountModel.findOne({
+        where: { id: accountId },
+        attributes: ["id", "account_name", "account_type"],
+      });
+    }
 
     res.json({
       filter,
@@ -76,6 +94,7 @@ router.get("/", async (req, res) => {
       totalExpense: totalExpense.toFixed(2),
       balance: balance.toFixed(2),
       transactions,
+      accountDetails,
     });
   } catch (error) {
     console.error("Error retrieving transactions:", error);
@@ -87,3 +106,4 @@ router.get("/", async (req, res) => {
 });
 
 module.exports = router;
+

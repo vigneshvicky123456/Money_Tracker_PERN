@@ -1,20 +1,29 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NewModal from "../Components/Transactions/NewModal";
 import RecentTransactions from "../Components/Dashboard/RecentTransactions";
-import { setFilter } from '../features/filterByDateSlice';
+import FilterModal from "../Components/Transactions/FilterModal";
+import { FilteredTransactionsByDate} from '../features/filterByDateSlice';
 
 const Transactions = () => {
   const dispatch = useDispatch();
   const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
-  const { filter, filteredTransactions } = useSelector((state) => state.filterByDate);
-  //const { newTransactions } = useSelector((state) => state.newTransaction);
+  const { filteredTransactions } = useSelector((state) => state.filterByDate);
+
   const [newTransModal, setNewTransModal] = useState(false);
+  const [filterTransModal, setFilterTransModal] = useState(false);
+
+  const [filter , setFilter] = useState("all")
 
   const handleFilterChange = (e) => {
-    dispatch(setFilter(e.target.value));
-    //console.log('handleFilterChange',e.target.value);
+    setFilter(e.target.value)
+    console.log('handleFilterChange setFilter:',e.target.value);
 };
+
+useEffect(() => {
+  dispatch(FilteredTransactionsByDate({filter}));
+  console.log("Transactions useEffect filter: ",filter);
+},[dispatch,filter]);
 
 
   return (
@@ -55,6 +64,20 @@ const Transactions = () => {
                 <option value="thismonth">This Month</option>
                 {/* <option value="custom">Custom Date</option> */}
               </select>
+            </div>
+            <div className="relative">
+            <button
+                className="border border-gray-300 bg-white rounded-r flex px-3 py-[6px]"
+                type="button"
+                onClick={() => setFilterTransModal(true)}
+              >
+                ?
+              </button>
+              <FilterModal
+                filterTransModalOpen={filterTransModal}
+                onClose={setFilterTransModal}
+                filterType={filter}
+              />
             </div>
           </div>
 

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allAccounts } from "../features/accountsSlice";
+import { fetchReports, fetchTagExpenseReports } from "../features/reportsSlice";
+import Expense_IncomeChart from "../Components/Reports/Expense_IncomeChart";
+import ExpensebyTagsChart from "../Components/Reports/ExpensebyTagsChart";
 
 const Reports = () => {
   const dispatch = useDispatch();
@@ -22,12 +25,24 @@ const Reports = () => {
     { id: 13, label: "EU Consulting", value: "EU Consulting" },
   ];
 
+  const [view, setView] = useState("yearly");
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [reportsType, setReportsType] = useState("Expense_Income");
+  const [year, setYear] = useState(currentDate.getFullYear());
+  const [monthYear, setMonthYear] = useState("");
+  const [transaction_tag, setTransaction_tag] = useState("");
+
   useEffect(() => {
     dispatch(allAccounts());
   }, [dispatch]);
 
-  const [view, setView] = useState("yearly");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const handleReportsTypeChange = (e) => {
+    setReportsType(e.target.value);
+  };
+
+  const handleTransTagChange = (e) => {
+    setTransaction_tag(e.target.value);
+  }
 
   const handleDateChange = (e) => {
     setView(e.target.value);
@@ -36,7 +51,7 @@ const Reports = () => {
 
   const handlePreviousDate = () => {
     setCurrentDate((prev) => {
-      const newDate = new Date(prev); 
+      const newDate = new Date(prev);
       if (view === "monthly") {
         newDate.setMonth(newDate.getMonth() - 1);
       } else {
@@ -48,7 +63,7 @@ const Reports = () => {
 
   const handleNextDate = () => {
     setCurrentDate((prev) => {
-      const newDate = new Date(prev); 
+      const newDate = new Date(prev);
       if (view === "monthly") {
         newDate.setMonth(newDate.getMonth() + 1);
       } else {
@@ -58,12 +73,40 @@ const Reports = () => {
     });
   };
 
-  const getPlaceholder = () => {
+  const chartView = () => {
     if (view === "monthly") {
-      return currentDate.toLocaleString("default", { month: "short", year: "numeric" });
+      setMonthYear(
+        currentDate.toLocaleString("default", {
+          month: "short",
+          year: "numeric",
+        })
+      );
+    } else {
+      setYear(currentDate.getFullYear());
     }
-    return currentDate.getFullYear();
   };
+  
+  useEffect(() => { 
+    chartView();
+    if (reportsType === "Expense_Income") {
+      if (view === "yearly") {
+        dispatch(fetchReports({ reportsType, year }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year);
+      } else {
+        dispatch(fetchReports({ reportsType, monthYear }));
+        console.log("Reports useEffect ReportsType & monthYear: ", reportsType, monthYear);
+      }
+    } else if (reportsType === "ExpensebyTags") {
+      if (view === "yearly") {
+        dispatch(fetchTagExpenseReports({ reportsType, year, transaction_tag }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year, transaction_tag);
+      } else {
+        dispatch(fetchTagExpenseReports({ reportsType, monthYear, transaction_tag }));
+        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, transaction_tag);
+      }
+    }
+  }, [view, reportsType, currentDate, monthYear, year, transaction_tag]);
+  
 
   return (
     <div>
@@ -74,45 +117,54 @@ const Reports = () => {
         <div className="mx-[99px] border shadow-custom bg-white w-[84%] h-[full] rounded">
           <div className="border-b border-gray-300  p-[15px] bg-gray-50 flex">
             <div className="bg-white  rounded">
-              <select className=" border border-gray-300 px-3 py-[10px] rounded-l text-sm text-gray-500 focus:outline-none w-[full]">
-                <option value="Expense & Income">Expense & Income</option>
-                <option value="Expense by Tags">Expense by Tags</option>
-                <option value="Net Income">Net Income</option>
-                <option value="Net Worth">Net Worth</option>
+              <select
+                className=" border border-gray-300 px-3 py-[10px] rounded-l text-sm text-gray-500 focus:outline-none w-[full]"
+                value={reportsType}
+                onChange={handleReportsTypeChange}
+              >
+                <option value="Expense_Income">Expense & Income</option>
+                <option value="ExpensebyTags">Expense by Tags</option>
+                <option value="NetIncome">Net Income</option>
+                <option value="NetWorth">Net Worth</option>
               </select>
-              <button 
+              <button
                 className="border-y border-gray-300 px-3 pb-[9px] py-[7px]"
                 onClick={handlePreviousDate}
               >
                 -
               </button>
-              <select 
+              <select
                 className=" border border-gray-300 px-3 py-[10px] text-sm text-gray-500 focus:border-gray-400 hover:border-gray-400 focus:outline-none"
-                value={view} 
+                value={view}
                 onChange={handleDateChange}
               >
                 <option value="yearly">Yearly</option>
                 <option value="monthly">Monthly</option>
               </select>
-              <button 
+              <button
                 className="border-r border-y border-gray-300 rounded-r px-3 pb-[9px] py-[7px]"
                 onClick={handleNextDate}
               >
                 +
               </button>
             </div>
+            {view === "monthly" ? <p>{monthYear}</p> : <p>{year}</p>}
           </div>
-          <div className="h-[500px] border-b border-gray-300">
-
-          {getPlaceholder()}
+          <div className="h-[600px] border-b border-gray-300">
+           
+            {reportsType === "Expense_Income" ? (
+              <Expense_IncomeChart />
+            ) : reportsType === "ExpensebyTags" ? (
+              <ExpensebyTagsChart />
+            ) : (
+              <p>No Chart</p>
+            )}
           </div>
           <div className="p-4 bg-gray-50 ">
             <select
               className="block border flex rounded p-[10px] mt-[5px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
               id="dropdown"
               name="fromNameId"
-              //onChange={accountExpenseChange}
-              //value={newExpense.fromNameId}
             >
               {accounts.map((accdata) => (
                 <option
@@ -121,7 +173,6 @@ const Reports = () => {
                   className="hover:bg-red-500 text-sm flex justify-between items-center"
                 >
                   {accdata.account_name}
-                  {/* {accdata.account_type} */}
                 </option>
               ))}
             </select>
@@ -130,8 +181,8 @@ const Reports = () => {
               id="dropdown"
               name="tag"
               placeholder="Choose existing tags or add new"
-              //onChange={accountExpenseChange}
-              //value={newExpense.tag}
+              value={transaction_tag}
+              onChange={handleTransTagChange}
             >
               <option className="text-sm text-gray-300" disabled>
                 Choose existing tags
