@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteAccount } from "../../features/accountsSlice";
 
-const DeleteAccount = ({ deleteModalOpen, onClose }) => {
+const DeleteAccount = ({ deleteModalOpen, onClose, editOnClose }) => {
   const dispatch = useDispatch();
   const selectedAccount = useSelector((state) => state.account.selectedAccount);
   if (!deleteModalOpen) return null;
@@ -10,6 +10,7 @@ const DeleteAccount = ({ deleteModalOpen, onClose }) => {
   const deleteAccountById = (id) => {
   dispatch(deleteAccount(id)); 
   onClose(false);
+  editOnClose();
   };
 
   const closeDeleteModal = () => {

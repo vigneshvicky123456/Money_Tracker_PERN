@@ -12,7 +12,7 @@ const Income = () => {
   const newIncomeState = {
     type: "Income",
     toName: "",
-    toNameId: "",
+    toNameId: 0,
     toAmount: 0,
     toCode: "",
     tag: "",
@@ -41,12 +41,18 @@ const Income = () => {
 
   useEffect(() => {
     if (accounts.length > 0) {
-      const firstAccount = accounts[0];
+      const firstAccount = accounts[1];
       setNewIncome((prev) => ({
         ...prev,
         toNameId: firstAccount.id.toString(),
         toName: firstAccount.account_name,
         toCode: firstAccount.account_currency_code,
+        toAccountId: firstAccount.id || 0,
+        toAccountGroup: firstAccount.account_type || "",
+        toAccountBalance: firstAccount.account_balance || 0,
+        toAccountCurrency: firstAccount.account_currency_name || "",
+        toAccountCheck: firstAccount.account_currency_name_check || false,
+        toAccountDashboard: firstAccount.show_on_dashboard || false,
       }));
     }
   }, [accounts]);
@@ -95,6 +101,8 @@ const Income = () => {
           transaction_tag: newIncome.tag,
           transaction_note: newIncome.note,
           transaction_date: newIncome.date,
+          transaction_to_name_id: newIncome.toNameId,
+          transaction_from_name_id: 0,
         })
       );
       const addAmount = parseInt(newIncome.toAccountBalance) + parseInt(newIncome.toAmount);
@@ -134,7 +142,6 @@ const Income = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
           </select>

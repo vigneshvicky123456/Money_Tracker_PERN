@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSingleNewTransaction } from "../../features/newTransactionsSlice";
 import EditModal from "../Transactions/Edit Transaction/EditModal";
-import { FilteredTransactionsByDate } from "../../features/filterByDateSlice";
+import { allNewTransactions } from "../../features/newTransactionsSlice"
 
 const RecentTransactions = () => {
   const dispatch = useDispatch();
-  const filteredTransactions = useSelector((state) => state.filterByDate.filteredTransactions);
-
+  const newTransactions = useSelector((state) => state.newTransaction.newTransactions)
   const [editTransModal, setEditTransModal] = useState(false);
 
   const showTransModal = (id) => {
@@ -16,7 +15,7 @@ const RecentTransactions = () => {
   };
 
   useEffect(() => {
-    dispatch(FilteredTransactionsByDate());
+    dispatch(allNewTransactions());
   }, [dispatch]);
 
   const formatDate = (dateString) => {
@@ -26,7 +25,6 @@ const RecentTransactions = () => {
       return new Intl.DateTimeFormat("en-US", {
         day: "numeric",
         month: "short",
-        //year: "numeric",
       }).format(date);
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -39,7 +37,7 @@ const RecentTransactions = () => {
     return type === "Expense" ? `-${parsedAmount}` : `${parsedAmount}`;
   };
 
-  if (!filteredTransactions || filteredTransactions.length === 0) {
+  if (!newTransactions || newTransactions.length === 0) {
     return (
       <div className="border p-4 rounded">
         <h1 className="text-sm text-gray-500">No transactions found.</h1>
@@ -51,7 +49,7 @@ const RecentTransactions = () => {
     <div className="w-full h-auto">
       <div>
         <ul>
-          {filteredTransactions?.transactions?.map((history) => (
+          {newTransactions?.map((history) => (
             <li key={history.id} className="p-3 border-b">
               <div className="flex justify-between text-sm items-center">
                 <div className="flex space-x-4">
@@ -98,14 +96,18 @@ const RecentTransactions = () => {
                   </span>
                   <button
                     className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    type="button"
                     onClick={() => showTransModal(history.id)}
                   >
                     Edit
                   </button>
-                  <EditModal
-                    editTransModalOpen={editTransModal}
-                    onClose={setEditTransModal}
-                  />
+                  {editTransModal && (
+                     <EditModal
+                     editTransModalOpen={editTransModal}
+                     onClose={setEditTransModal}
+                   />
+                  )}
+                 
                 </div>
               </div>
             </li>

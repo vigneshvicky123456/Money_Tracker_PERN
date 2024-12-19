@@ -3,11 +3,11 @@ import axios from 'axios';
 
 // Thunks API requests
 
-// // Get All newTransactions
-// export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransactions', async () => {
-//     const response = await axios.get(`http://localhost:3003/newTransactions`);
-//     return response.data;
-// });
+// Get All newTransactions
+export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransactions', async () => {
+    const response = await axios.get(`http://localhost:3003/newTransactions`);
+    return response.data;
+});
 
 // Get Single newTransactions
 export const getSingleNewTransaction = createAsyncThunk('newTransaction/getSingleNewTransaction', async (id) => {
@@ -27,7 +27,9 @@ export const addNewTransaction = createAsyncThunk('newTransaction/addNewTransact
     transaction_to_code, 
     transaction_tag,
     transaction_note,
-    transaction_date
+    transaction_date,
+    transaction_to_name_id,
+    transaction_from_name_id
   }) => {
      
     const response = await axios.post(`http://localhost:3003/newTransactions`,{
@@ -40,9 +42,11 @@ export const addNewTransaction = createAsyncThunk('newTransaction/addNewTransact
         transaction_to_code, 
         transaction_tag,
         transaction_note,
-        transaction_date
+        transaction_date,
+        transaction_to_name_id,
+        transaction_from_name_id
     });
-    console.log('ASYNC Add POST ', 
+    console.log('ASYNC Add POST newTransactions', 
         transaction_type,
         transaction_from_name, 
         transaction_from_amount,
@@ -52,7 +56,9 @@ export const addNewTransaction = createAsyncThunk('newTransaction/addNewTransact
         transaction_to_code, 
         transaction_tag,
         transaction_note,
-        transaction_date);
+        transaction_date,
+        transaction_to_name_id,
+        transaction_from_name_id);
     
     return response.data;
 });
@@ -69,7 +75,9 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
     transaction_to_code, 
     transaction_tag,
     transaction_note,
-    transaction_date
+    transaction_date,
+    transaction_to_name_id,
+    transaction_from_name_id
 }) => {
     const response = await axios.put(`http://localhost:3003/newTransactions/${id}`,{
         id,
@@ -82,9 +90,11 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
         transaction_to_code, 
         transaction_tag,
         transaction_note,
-        transaction_date
+        transaction_date,
+        transaction_to_name_id,
+        transaction_from_name_id
     });
-    console.log('ASYNC Update  ', 
+    console.log('ASYNC Update newTransactions ', 
         transaction_type,
         transaction_from_name, 
         transaction_from_amount,
@@ -94,7 +104,9 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
         transaction_to_code, 
         transaction_tag,
         transaction_note,
-        transaction_date);
+        transaction_date,
+        transaction_to_name_id,
+        transaction_from_name_id);
     return response.data;
 });
 
@@ -114,9 +126,10 @@ const newTransactionSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // .addCase(allNewTransactions.fulfilled, (state, action) => {
-            //     state.newTransactions = action.payload;
-            // })
+            .addCase(allNewTransactions.fulfilled, (state, action) => {
+                state.newTransactions = action.payload;
+                console.log("slice allNewTransaction: ",state.newTransactions);
+            })
             .addCase(getSingleNewTransaction.fulfilled, (state, action) => {
                 state.selectedNewTransaction = action.payload;  
                 console.log("slice getSingleNewTransaction: ",state.selectedNewTransaction);

@@ -1,30 +1,44 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allAccounts } from "../../../features/accountsSlice";
+import { allAccounts, updateAccount } from "../../../features/accountsSlice";
 import { updateNewTransaction, deleteNewTransaction } from "../../../features/newTransactionsSlice";
 
-const EditTransfer = () => {
+const EditTransfer = ({ editOnClose }) => {
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.account);
-    const selectedNewTransaction = useSelector(
-      (state) => state.newTransaction.selectedNewTransaction
-    );
-
+    const selectedNewTransaction = useSelector((state) => state.newTransaction.selectedNewTransaction);
+   
     const [showError, setShowError] = useState(false);
 
     const editTransferState = {
       id:0,
-      type: "Transfer",
+      type: "",
       fromName: "",
-      fromNameId: "",
+      fromNameId: 0,
       fromAmount: 0,
+      fromAmountStore: 0,
       fromCode: "",
       toName: "",
-      toNameId: "",
+      toNameId: 0,
       toAmount: 0,
+      toAmountStore: 0,
       toCode: "",
       date: new Date().toISOString().slice(0, 10),
       note: "",
+
+      accountId: 0,
+      accountGroup: "",
+      accountBalance: 0,
+      accountCurrency: "",
+      accountCheck: false,
+      accountDashboard: false,
+
+      toAccountId: 0,
+      toAccountGroup: "",
+      toAccountBalance: 0,
+      toAccountCurrency: "",
+      toAccountCheck: false,
+      toAccountDashboard: false,
     };
   
     const [editTransfer, setEditTransfer] = useState(editTransferState);
@@ -35,19 +49,66 @@ const EditTransfer = () => {
         if (selectedNewTransaction) {
           setEditTransfer({
             id: selectedNewTransaction.id,
-            type: selectedNewTransaction.transaction_type,
             fromName: selectedNewTransaction.transaction_from_name,
+            fromNameId: selectedNewTransaction.transaction_from_name_id,
             fromAmount: selectedNewTransaction.transaction_from_amount,
+            fromAmountStore: selectedNewTransaction.transaction_from_amount,
             fromCode: selectedNewTransaction.transaction_from_code,
             toName: selectedNewTransaction.transaction_to_name,
+            toNameId: selectedNewTransaction.transaction_to_name_id,
             toAmount: selectedNewTransaction.transaction_to_amount,
+            toAmountStore: selectedNewTransaction.transaction_to_amount,
             toCode: selectedNewTransaction.transaction_to_code,
             date: selectedNewTransaction.transaction_date,
             note: selectedNewTransaction.transaction_note,
           });
         }
       }, [dispatch, selectedNewTransaction]);
-    
+
+      useEffect(() => {
+        if (selectedNewTransaction && selectedNewTransaction.transaction_from_name_id) {
+          const selectedAccount = Object.values(accounts).find(
+            (account) => account.id === selectedNewTransaction.transaction_from_name_id
+          );
+          if (selectedAccount) {
+            setEditTransfer((prev) => ({
+              ...prev,
+              accountId: selectedAccount.id || 0,
+              accountGroup: selectedAccount.account_type || "",
+              accountBalance: selectedAccount.account_balance || 0,
+              accountCurrency: selectedAccount.account_currency_name || "",
+              accountCheck: selectedAccount.account_currency_name_check || false,
+              accountDashboard: selectedAccount.show_on_dashboard || false,
+            }));
+          } else {
+            console.error(
+              `Account with ID ${selectedNewTransaction.transaction_from_name_id} not found in accounts.`
+            );
+          }
+        }
+
+        if (selectedNewTransaction && selectedNewTransaction.transaction_to_name_id) {
+          const selectedAccount = Object.values(accounts).find(
+            (account) => account.id === selectedNewTransaction.transaction_to_name_id
+          );
+          if (selectedAccount) {
+            setEditTransfer((prev) => ({
+              ...prev,
+              toAccountId: selectedAccount.id || 0,
+              toAccountGroup: selectedAccount.account_type || "",
+              toAccountBalance: selectedAccount.account_balance || 0,
+              toAccountCurrency: selectedAccount.account_currency_name || "",
+              toAccountCheck: selectedAccount.account_currency_name_check || false,
+              toAccountDashboard: selectedAccount.show_on_dashboard || false,
+            }));
+          } else {
+            console.error(
+              `Account with ID ${selectedNewTransaction.transaction_from_name_id} not found in accounts.`
+            );
+          }
+        }
+      }, [selectedNewTransaction, accounts]);
+
       const editAccountTransferChange = (e) => {
         const { name, value } = e.target;
         if (name === "fromNameId") {
@@ -57,8 +118,14 @@ const EditTransfer = () => {
           setEditTransfer((prevData) => ({
             ...prevData,
             [name]: value,
+            accountId: selectedAccount ? selectedAccount.id : 0,
             fromName: selectedAccount ? selectedAccount.account_name : "",
             fromCode: selectedAccount ? selectedAccount.account_currency_code : "",
+            accountGroup: selectedAccount ? selectedAccount.account_type : "",
+            accountBalance: selectedAccount ? selectedAccount.account_balance : "",
+            accountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+            accountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+            accountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
           }));
         } else if (name === "toNameId") {
           const selectedAccount = accounts.find(
@@ -67,8 +134,14 @@ const EditTransfer = () => {
           setEditTransfer((prevData) => ({
             ...prevData,
             [name]: value,
+            toAccountId: selectedAccount ? selectedAccount.id : 0,
             toName: selectedAccount ? selectedAccount.account_name : "",
             toCode: selectedAccount ? selectedAccount.account_currency_code : "",
+            toAccountGroup: selectedAccount ? selectedAccount.account_type : "",
+            toAccountBalance: selectedAccount ? selectedAccount.account_balance : 0,
+            toAccountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+            toAccountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+            toAccountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
           }));
         } else {
           setEditTransfer((prevData) => ({
@@ -77,33 +150,80 @@ const EditTransfer = () => {
           }));
         }
       };
-
       const saveEditTransfer = (e) => {
         e.preventDefault();
+      
         if (!editTransfer.fromAmount) {
           setShowError(true);
-        } else {
-          setShowError(false);
+          return;
+        }
+        setShowError(false);
+        const updatedTransfer = {
+          ...editTransfer,
+          type: "Transfer",
+        };
           dispatch(
             updateNewTransaction({
-              id: editTransfer.id,
-              transaction_type: editTransfer.type,
-              transaction_from_name: editTransfer.fromName,
-              transaction_from_amount: editTransfer.fromAmount,
-              transaction_from_code: editTransfer.fromCode,
-              transaction_to_name: editTransfer.toName,
-              transaction_to_amount: editTransfer.toAmount,
-              transaction_to_code: editTransfer.toCode,
-              transaction_tag: "",
-              transaction_note: editTransfer.note,
-              transaction_date: editTransfer.date,
+              id: updatedTransfer.id,
+              transaction_type: updatedTransfer.type,
+              transaction_from_name: updatedTransfer.fromName,
+              transaction_from_amount: updatedTransfer.fromAmount,
+              transaction_from_code: updatedTransfer.fromCode,
+              transaction_to_name: updatedTransfer.toName,
+              transaction_to_amount: updatedTransfer.fromAmount,
+              transaction_to_code: updatedTransfer.toCode,
+              transaction_tag: "", 
+              transaction_note: updatedTransfer.note,
+              transaction_date: updatedTransfer.date,
+              transaction_from_name_id: updatedTransfer.fromNameId,
+              transaction_to_name_id: updatedTransfer.toNameId,
             })
           );
-          console.log("saveEditTransfer ", editTransfer);
-          setEditTransfer(editTransferState);
-        }
-      };  
+      
+          const updatedFromAccountBalance =
+            parseInt(updatedTransfer.accountBalance , 10) +
+            parseInt(updatedTransfer.fromAmountStore , 10) -
+            parseInt(updatedTransfer.fromAmount , 10);
+      
+          const updatedToAccountBalance =
+            parseInt(updatedTransfer.toAccountBalance , 10) -
+            parseInt(updatedTransfer.toAmountStore , 10) +
+            parseInt(updatedTransfer.fromAmount , 10);
 
+          dispatch(
+            updateAccount({
+              id: updatedTransfer.accountId,
+              account_name: updatedTransfer.fromName,
+              account_type: updatedTransfer.accountGroup,
+              account_balance: updatedFromAccountBalance,
+              account_currency_code: updatedTransfer.fromCode,
+              account_currency_name: updatedTransfer.accountCurrency,
+              account_currency_name_check: updatedTransfer.accountCheck,
+              show_on_dashboard: updatedTransfer.accountDashboard,
+            })
+          );
+      
+          if (updatedTransfer.toAccountId) {
+            dispatch(
+              updateAccount({
+                id: updatedTransfer.toAccountId,
+                account_name: updatedTransfer.toName,
+                account_type: updatedTransfer.toAccountGroup,
+                account_balance: updatedToAccountBalance,
+                account_currency_code: updatedTransfer.toCode,
+                account_currency_name: updatedTransfer.toAccountCurrency,
+                account_currency_name_check: updatedTransfer.toAccountCheck,
+                show_on_dashboard: updatedTransfer.toAccountDashboard,
+              })
+            );
+          } else {
+            console.error("toAccountId is missing or invalid.");
+          }
+          console.log("saveEditTransfer: ", updatedTransfer);
+          setEditTransfer(editTransferState);
+          editOnClose();
+      };
+      
       const deleteTransactionById = (id) => {
         dispatch(deleteNewTransaction(id));
       };    
@@ -127,7 +247,6 @@ const EditTransfer = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
             ;
@@ -168,7 +287,6 @@ const EditTransfer = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
           </select>
@@ -178,7 +296,7 @@ const EditTransfer = () => {
             className="w-[90px] p-[6px] rounded-l focus:border-blue-400 focus:outline-none"
             type="number"
             name="toAmount"
-            value={editTransfer.toAmount}
+            value={editTransfer.fromAmount}
             onChange={editAccountTransferChange}
           />
           <span className="p-[7px] pl-[28px] text-gray-700 text-sm bg-gray-300 rounded-r">

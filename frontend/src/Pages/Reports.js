@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Select from "react-select";
 import { allAccounts } from "../features/accountsSlice";
-import { fetchReports, fetchTagExpenseReports } from "../features/reportsSlice";
+import { fetchReports, fetchTagExpenseReports, fetchNetIncomeReports, fetchNetWorthReports } from "../features/reportsSlice";
 import Expense_IncomeChart from "../Components/Reports/Expense_IncomeChart";
 import ExpensebyTagsChart from "../Components/Reports/ExpensebyTagsChart";
+import NetIncomeChart from "../Components/Reports/NetIncomeChart";
+import NetWorthChart from "../Components/Reports/NetWorthChart";
 
 const Reports = () => {
   const dispatch = useDispatch();
@@ -30,7 +33,14 @@ const Reports = () => {
   const [reportsType, setReportsType] = useState("Expense_Income");
   const [year, setYear] = useState(currentDate.getFullYear());
   const [monthYear, setMonthYear] = useState("");
-  const [transaction_tag, setTransaction_tag] = useState("");
+
+  const filterState = {
+    accNameId: [],
+    tagName: [],
+    accountId: [],
+  };
+
+  const [filterTrans, setFilterTrans] = useState(filterState);
 
   useEffect(() => {
     dispatch(allAccounts());
@@ -40,8 +50,25 @@ const Reports = () => {
     setReportsType(e.target.value);
   };
 
-  const handleTransTagChange = (e) => {
-    setTransaction_tag(e.target.value);
+  const handleTransTagChange = (e, actionMeta) => {
+    if (actionMeta.name === "tagName") {
+      setFilterTrans((prevData) => ({
+        ...prevData,
+        tagName: e || [],
+      }));
+    } else if (actionMeta.name === "accNameId") {
+      setFilterTrans((prevData) => ({
+        ...prevData,
+        accNameId: e || [],
+        accountId: e.map((option) => option.value) || [],
+      }));
+    } else if (e.target) {
+      const { name, value } = e.target;
+      setFilterTrans((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   }
 
   const handleDateChange = (e) => {
@@ -88,29 +115,48 @@ const Reports = () => {
   
   useEffect(() => { 
     chartView();
+    const accountIds = Array.isArray(filterTrans.accNameId) 
+    ? filterTrans.accNameId.map((acc) => acc.value) 
+    : [];
+
     if (reportsType === "Expense_Income") {
       if (view === "yearly") {
-        dispatch(fetchReports({ reportsType, year }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year);
+        dispatch(fetchReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
-        dispatch(fetchReports({ reportsType, monthYear }));
-        console.log("Reports useEffect ReportsType & monthYear: ", reportsType, monthYear);
+        dispatch(fetchReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & monthYear: ", reportsType, monthYear, filterTrans);
       }
     } else if (reportsType === "ExpensebyTags") {
       if (view === "yearly") {
-        dispatch(fetchTagExpenseReports({ reportsType, year, transaction_tag }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year, transaction_tag);
+        dispatch(fetchTagExpenseReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
-        dispatch(fetchTagExpenseReports({ reportsType, monthYear, transaction_tag }));
-        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, transaction_tag);
+        dispatch(fetchTagExpenseReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
+      }
+    } else if (reportsType === "NetIncome") {
+      if (view === "yearly") {
+        dispatch(fetchNetIncomeReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
+      } else {
+        dispatch(fetchNetIncomeReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
+      } 
+    } else if (reportsType === "NetWorth") {
+      if (view === "yearly") {
+        dispatch(fetchNetWorthReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
+      } else {
+        dispatch(fetchNetWorthReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
+        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
       }
     }
-  }, [view, reportsType, currentDate, monthYear, year, transaction_tag]);
-  
+  }, [view, reportsType, currentDate, monthYear, year, filterTrans ]);
 
   return (
     <div>
-      <div className="fixed h-[62px] bg-indigo-700 border-b border-gray-300 w-full">
+      <div className="fixed z-10 h-[62px] bg-indigo-700 border-b border-gray-300 w-full">
         <h1 className="ml-[19px] pt-3 text-white text-2xl">Reports</h1>
       </div>
       <div className="bg-gray-100 pt-[80px] h-screen overflow-y-scroll">
@@ -148,7 +194,6 @@ const Reports = () => {
                 +
               </button>
             </div>
-            {view === "monthly" ? <p>{monthYear}</p> : <p>{year}</p>}
           </div>
           <div className="h-[600px] border-b border-gray-300">
            
@@ -156,47 +201,35 @@ const Reports = () => {
               <Expense_IncomeChart />
             ) : reportsType === "ExpensebyTags" ? (
               <ExpensebyTagsChart />
+            ) : reportsType === "NetIncome" ? (
+              <NetIncomeChart />
+            ) : reportsType === "NetWorth" ? (
+              <NetWorthChart />
             ) : (
               <p>No Chart</p>
             )}
           </div>
           <div className="p-4 bg-gray-50 ">
-            <select
-              className="block border flex rounded p-[10px] mt-[5px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
-              id="dropdown"
-              name="fromNameId"
-            >
-              {accounts.map((accdata) => (
-                <option
-                  key={accdata.id}
-                  value={accdata.id}
-                  className="hover:bg-red-500 text-sm flex justify-between items-center"
-                >
-                  {accdata.account_name}
-                </option>
-              ))}
-            </select>
-            <select
-              className="block border flex mt-[16px] rounded p-[10px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
-              id="dropdown"
-              name="tag"
-              placeholder="Choose existing tags or add new"
-              value={transaction_tag}
-              onChange={handleTransTagChange}
-            >
-              <option className="text-sm text-gray-300" disabled>
-                Choose existing tags
-              </option>
-              {tagOptions.map((option) => (
-                <option
-                  key={option.id}
-                  value={option.value}
-                  className="hover:bg-red-500 text-sm focus:bg-green-500"
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+             <Select
+               className="block rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-300 hover:border-gray-500 focus:outline-none"
+               name="accNameId"
+               options={accounts.map((acc) => ({
+               value: acc.id,
+               label: acc.account_name,
+               }))}
+               onChange={(selectedOptions) =>
+               handleTransTagChange(selectedOptions, { name: "accNameId" })}
+               value={filterTrans.accNameId}
+               isMulti
+             />
+             <Select
+               className="block mt-[16px] rounded p-[10px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
+               name="tagName"
+               options={tagOptions}
+               onChange={handleTransTagChange}
+               value={filterTrans.tagName}
+               isMulti
+            />
           </div>
         </div>
       </div>
@@ -205,3 +238,5 @@ const Reports = () => {
 };
 
 export default Reports;
+
+   

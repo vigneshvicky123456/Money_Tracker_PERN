@@ -12,15 +12,16 @@ const Expense = () => {
   const newExpenseState = {
     type: "Expense",
     fromName: "",
-    fromNameId: "",
+    fromNameId: 0,
     fromAmount: 0,
     fromCode: "",
     tag: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
+    
     accountId: 0,
     accountGroup: "",
-    accountBalance: "",
+    accountBalance: 0,
     accountCurrency: "",
     accountCheck: false,
     accountDashboard: false,
@@ -47,12 +48,18 @@ const Expense = () => {
 
   useEffect(() => {
     if (accounts.length > 0) {
-      const firstAccount = accounts[0];
+      const firstAccount = accounts[1];
       setNewExpense((prev) => ({
         ...prev,
         fromNameId: firstAccount.id.toString(),
         fromName: firstAccount.account_name,
         fromCode: firstAccount.account_currency_code,
+        accountId: firstAccount.id || 0,
+        accountGroup: firstAccount.account_type || "",
+        accountBalance: firstAccount.account_balance || 0,
+        accountCurrency: firstAccount.account_currency_name || "",
+        accountCheck: firstAccount.account_currency_name_check || false,
+        accountDashboard: firstAccount.show_on_dashboard || false,
       }));
     }
   }, [accounts]);
@@ -70,7 +77,7 @@ const Expense = () => {
         fromName: selectedAccount ? selectedAccount.account_name : "",
         fromCode: selectedAccount ? selectedAccount.account_currency_code : "",
         accountGroup: selectedAccount ? selectedAccount.account_type : "",
-        accountBalance: selectedAccount ? selectedAccount.account_balance : "",
+        accountBalance: selectedAccount ? selectedAccount.account_balance : 0,
         accountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
         accountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
         accountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
@@ -101,6 +108,8 @@ const Expense = () => {
           transaction_tag: newExpense.tag,
           transaction_note: newExpense.note,
           transaction_date: newExpense.date,
+          transaction_from_name_id: newExpense.fromNameId,
+          transaction_to_name_id: 0,
         })
       );
       const subAmount = newExpense.accountBalance - newExpense.fromAmount;
@@ -140,7 +149,6 @@ const Expense = () => {
                 className="hover:bg-red-500 text-sm flex justify-between items-center"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
             ;
@@ -175,7 +183,7 @@ const Expense = () => {
             onChange={accountExpenseChange}
             value={newExpense.tag}
           >
-            <option className="text-sm text-gray-300" disabled>
+            <option className="text-sm text-gray-300">
               Choose existing tags
             </option>
             {tagOptions.map((option) => (

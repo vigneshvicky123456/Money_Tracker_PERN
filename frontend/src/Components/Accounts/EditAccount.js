@@ -40,7 +40,7 @@ const EditAccount = ({ editModalOpen, onClose }) => {
 
   useEffect(() => {
     dispatch(getSelectedCurrency());
-
+    console.log('EditAccount useEffect:: ',selectedAccount);
    if (selectedAccount) {
     setEditAccounts({
       id: selectedAccount.id,
@@ -192,6 +192,7 @@ const EditAccount = ({ editModalOpen, onClose }) => {
             <DeleteAccount 
               deleteModalOpen={deleteModal}
               onClose={setDeleteModal}
+              editOnClose={closeEditModal}
             />
         </div>
       </div>

@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize"); 
 const newTransactionModel = require("../models/newTransactionModal");
-const accountModel = require("../models/accountsModal"); 
 const moment = require("moment");
 
 router.get("/", async (req, res) => {
@@ -38,11 +37,12 @@ router.get("/", async (req, res) => {
         endDate = moment().format("YYYY-MM-DD");
         break;
     }
-    
+
     console.log(`Fetching transactions from ${startDate} to ${endDate}`);
 
-    // Default run this filter
+    // Default run with date filter
     const queryOptions = {
+      order: [["transaction_date", "DESC"]],
       where: {
         transaction_date: {
           [Op.gte]: startDate,
@@ -51,16 +51,29 @@ router.get("/", async (req, res) => {
       },
     };
 
-    // Add filter by accountId if provided
     if (accountId) {
-      queryOptions.where.account_id = accountId;
+      const accountIdArray = accountId
+        .split(",")
+        .map((id) => parseInt(id.trim()));
+
+      queryOptions.where[Op.or] = [
+        { transaction_from_name_id: { [Op.in]: accountIdArray } },
+        { transaction_to_name_id: { [Op.in]: accountIdArray } },
+      ];
     }
 
     // Add filter by transaction_tag if provided
     if (transaction_tag) {
-      queryOptions.where.transaction_tag = transaction_tag;
+      const transactionTagsArray = Array.isArray(transaction_tag)
+        ? transaction_tag
+        : transaction_tag.split(",");
+
+      queryOptions.where.transaction_tag = {
+        [Op.in]: transactionTagsArray,
+      };
     }
 
+    // getAll transactions from the database
     const transactions = await newTransactionModel.findAll(queryOptions);
 
     let totalIncome = 0;
@@ -77,15 +90,6 @@ router.get("/", async (req, res) => {
 
     const balance = totalIncome - totalExpense;
 
-    // Fetch account details if accountId is provided
-    let accountDetails = null;
-    if (accountId) {
-      accountDetails = await accountModel.findOne({
-        where: { id: accountId },
-        attributes: ["id", "account_name", "account_type"],
-      });
-    }
-
     res.json({
       filter,
       startDate,
@@ -94,7 +98,6 @@ router.get("/", async (req, res) => {
       totalExpense: totalExpense.toFixed(2),
       balance: balance.toFixed(2),
       transactions,
-      accountDetails,
     });
   } catch (error) {
     console.error("Error retrieving transactions:", error);
@@ -106,4 +109,3 @@ router.get("/", async (req, res) => {
 });
 
 module.exports = router;
-

@@ -23,6 +23,8 @@ const newTransactionRoutes = require("./routes/newTransactions");
 const filterByDateRoutes = require("./routes/filterByDate");
 const expenseIncomeChartRoutes = require("./routes/Reports/expense_incomechart");
 const expensebyTagsChartRoutes = require("./routes/Reports/expensebytagschart");
+const netIncomeChartRoutes = require("./routes/Reports/netincomechart");
+const netWorthChartRoutes = require("./routes/Reports/networthchart");
 
 //Mildware
 const app = express();
@@ -37,6 +39,8 @@ app.use("/newTransactions",newTransactionRoutes);
 app.use("/filterByDate",filterByDateRoutes);
 app.use("/reports",expenseIncomeChartRoutes);
 app.use("/reports",expensebyTagsChartRoutes);
+app.use("/reports",netIncomeChartRoutes);
+app.use("/reports",netWorthChartRoutes);
 
 sequelize.sync()
     .then(() => {

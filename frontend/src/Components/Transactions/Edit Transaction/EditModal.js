@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import EditExpense from "./EditExpense";
 import EditTransfer from "./EditTransfer";
 import EditIncome from "./EditIncome";
-import { getSingleNewTransaction } from "../../../features/newTransactionsSlice";
-
 
 const EditModal = ({ editTransModalOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -14,7 +12,6 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
   const tabs = ["Expense", "Transfer", "Income"];
 
   useEffect(() => {
-    dispatch(getSingleNewTransaction());
        
      if (selectedNewTransaction) {
     const { transaction_type } = selectedNewTransaction;
@@ -22,7 +19,7 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
         setActiveTab(transaction_type);
       }
      }
-  }, [dispatch, selectedNewTransaction]);
+  }, [selectedNewTransaction]);
 
   if (!editTransModalOpen) return null;
 
@@ -66,19 +63,25 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
         <div className="p-4 border rounded-b">
           {activeTab === "Expense" && (
             <form className="space-y-4">
-              <EditExpense />
+              <EditExpense 
+                 editOnClose={closeEditTransModal}
+              />
             </form>
           )}
 
           {activeTab === "Transfer" && (
             <form className="space-y-4">
-              <EditTransfer />
+              <EditTransfer
+                 editOnClose={closeEditTransModal}
+              />
             </form>
           )}
 
           {activeTab === "Income" && (
             <form className="space-y-4">
-              <EditIncome />
+              <EditIncome 
+                 editOnClose={closeEditTransModal}
+              />
             </form>
           )}
         </div>

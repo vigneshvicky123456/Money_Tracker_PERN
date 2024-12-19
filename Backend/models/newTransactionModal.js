@@ -11,25 +11,25 @@ newTransactionModel.init(
             autoIncrement: true,
         },
         transaction_type: {
-                type: DataTypes.STRING,
-                allowNull: false,
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         transaction_from_name: {
-                type: DataTypes.STRING,
-                allowNull: false,
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         transaction_from_amount: {
-                type: DataTypes.DECIMAL,
-                allowNull: false,
+            type: DataTypes.DECIMAL,
+            allowNull: false,
         },
         transaction_from_code: {
-                type: DataTypes.STRING(10),
-                allowNull: false,
+            type: DataTypes.STRING(10),
+            allowNull: false,
         },
         transaction_to_name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-        },
+            type: DataTypes.STRING,
+            allowNull: false,
+        },    
         transaction_to_amount: {
             type: DataTypes.DECIMAL,
             allowNull: false,
@@ -49,6 +49,14 @@ newTransactionModel.init(
         transaction_date: {
             type: DataTypes.DATEONLY,
             allowNull: false,
+        },
+        transaction_to_name_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        transaction_from_name_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
     },
     {

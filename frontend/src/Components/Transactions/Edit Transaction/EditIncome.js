@@ -1,30 +1,32 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { allAccounts } from "../../../features/accountsSlice";
-import {
-  updateNewTransaction,
-  deleteNewTransaction,
-} from "../../../features/newTransactionsSlice";
+import { allAccounts, updateAccount } from "../../../features/accountsSlice";
+import { updateNewTransaction, deleteNewTransaction } from "../../../features/newTransactionsSlice";
 
-const EditIncome = () => {
+const EditIncome = ({ editOnClose }) => {
   const dispatch = useDispatch();
   const { accounts } = useSelector((state) => state.account);
-  const selectedNewTransaction = useSelector(
-    (state) => state.newTransaction.selectedNewTransaction
-  );
+  const selectedNewTransaction = useSelector((state) => state.newTransaction.selectedNewTransaction);
 
   const [showError, setShowError] = useState(false);
 
   const editIncomeState = {
     id: 0,
-    type: "Income",
+    type: "",
     toName: "",
-    toNameId: "",
+    toNameId: 0,
     toAmount: 0,
+    toAmountStore: 0,
     toCode: "",
     tag: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
+    accountId: 0,
+    accountGroup: "",
+    accountBalance: 0,
+    accountCurrency: "",
+    accountCheck: false,
+    accountDashboard: false,
   };
 
   const [editIncome, setEditIncome] = useState(editIncomeState);
@@ -41,9 +43,10 @@ const EditIncome = () => {
     if (selectedNewTransaction) {
       setEditIncome({
         id: selectedNewTransaction.id,
-        type: selectedNewTransaction.transaction_type,
         toName: selectedNewTransaction.transaction_to_name,
+        toNameId: selectedNewTransaction.transaction_to_name_id,
         toAmount: selectedNewTransaction.transaction_to_amount,
+        toAmountStore: selectedNewTransaction.transaction_to_amount,
         toCode: selectedNewTransaction.transaction_to_code,
         tag: selectedNewTransaction.transaction_tag,
         date: selectedNewTransaction.transaction_date,
@@ -51,6 +54,30 @@ const EditIncome = () => {
       });
     }
   }, [dispatch, selectedNewTransaction]);
+
+  useEffect(() => {
+    if (selectedNewTransaction && selectedNewTransaction.transaction_to_name_id) {
+      const selectedAccount = Object.values(accounts).find(
+        (account) => account.id === selectedNewTransaction.transaction_to_name_id
+      );
+      if (selectedAccount) {
+        setEditIncome((prev) => ({
+          ...prev,
+          accountId: selectedAccount.id || 0,
+          accountGroup: selectedAccount.account_type || "",
+          accountBalance: selectedAccount.account_balance || 0,
+          accountCurrency: selectedAccount.account_currency_name || "",
+          accountCheck: selectedAccount.account_currency_name_check || false,
+          accountDashboard: selectedAccount.show_on_dashboard || false,
+        }));
+      } else {
+        console.error(
+          `Account with ID ${selectedNewTransaction.transaction_from_name_id} not found in accounts.`
+        );
+      }
+    }
+  }, [selectedNewTransaction, accounts]);
+
 
   const editAccountIncomeChange = (e) => {
     const { name, value } = e.target;
@@ -61,8 +88,14 @@ const EditIncome = () => {
       setEditIncome((prevData) => ({
         ...prevData,
         [name]: value,
+        accountId: selectedAccount ? selectedAccount.id : 0,
         toName: selectedAccount ? selectedAccount.account_name : "",
         toCode: selectedAccount ? selectedAccount.account_currency_code : "",
+        accountGroup: selectedAccount ? selectedAccount.account_type : "",
+        accountBalance: selectedAccount ? selectedAccount.account_balance : 0,
+        accountCurrency: selectedAccount ? selectedAccount.account_currency_name : "",
+        accountCheck: selectedAccount ? selectedAccount.account_currency_name_check : false,
+        accountDashboard: selectedAccount ? selectedAccount.show_on_dashboard : false,
       }));
     } else {
       setEditIncome((prevData) => ({
@@ -74,30 +107,57 @@ const EditIncome = () => {
 
   const saveEditIncome = (e) => {
     e.preventDefault();
+
     if (!editIncome.toAmount) {
       setShowError(true);
-    } else {
-      setShowError(false);
-      dispatch(
-        updateNewTransaction({
-          id: editIncome.id,
-          transaction_type: editIncome.type,
-          transaction_from_name: "",
-          transaction_from_amount: 0,
-          transaction_from_code: "",
-          transaction_to_name: editIncome.toName,
-          transaction_to_amount: editIncome.toAmount,
-          transaction_to_code: editIncome.toCode,
-          transaction_tag: editIncome.tag,
-          transaction_note: editIncome.note,
-          transaction_date: editIncome.date,
-        })
-      );
-      console.log("saveEditIncome ", editIncome);
-      setEditIncome(editIncomeState);
+      return; 
     }
-  };
+    setShowError(false);
+    const updatedIncome = {
+      ...editIncome,
+      type: 'Income',
+    };
+    dispatch(
+      updateNewTransaction({
+        id: updatedIncome.id,
+        transaction_type: updatedIncome.type,
+        transaction_from_name: "", 
+        transaction_from_amount: 0, 
+        transaction_from_code: "",
+        transaction_to_name: updatedIncome.toName,
+        transaction_to_amount: updatedIncome.toAmount,
+        transaction_to_code: updatedIncome.toCode,
+        transaction_tag: updatedIncome.tag,
+        transaction_note: updatedIncome.note,
+        transaction_date: updatedIncome.date,
+        transaction_from_name_id: 0, 
+        transaction_to_name_id: updatedIncome.toNameId,
+      })
+    );
 
+    const subAmount =
+      parseInt(updatedIncome.accountBalance, 10) -
+      parseInt(updatedIncome.toAmountStore, 10) +
+      parseInt(updatedIncome.toAmount, 10);
+
+    dispatch(
+      updateAccount({
+        id: updatedIncome.accountId,
+        account_name: updatedIncome.toName, 
+        account_type: updatedIncome.accountGroup,
+        account_balance: subAmount,
+        account_currency_code: updatedIncome.toCode, 
+        account_currency_name: updatedIncome.accountCurrency,
+        account_currency_name_check: updatedIncome.accountCheck,
+        show_on_dashboard: updatedIncome.accountDashboard,
+      })
+    );
+
+    console.log("saveEditIncome: ", updatedIncome);
+    setEditIncome(editIncomeState);
+    editOnClose();
+  };
+  
   const deleteTransactionById = (id) => {
     dispatch(deleteNewTransaction(id));
   };
@@ -121,7 +181,6 @@ const EditIncome = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
           </select>

@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allAccounts } from "../../features/accountsSlice";
-import {  FilteredTransactionsByDate } from '../../features/filterByDateSlice';
+import { FilteredTransactionsByDate } from "../../features/filterByDateSlice";
+import Select from "react-select";
 
 const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
   const dispatch = useDispatch();
   const { accounts } = useSelector((state) => state.account);
 
   const filterState = {
-    accName: "",
-    accNameId: "",
-    tagName: "",
-    accountId: 0,
+    accNameId: [],
+    tagName: [],
+    accountId: [],
     filter: "",
   };
 
@@ -33,19 +33,20 @@ const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
     { id: 13, label: "EU Consulting", value: "EU Consulting" },
   ];
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "accNameId") {
-      const selectedAccount = accounts.find(
-        (acc) => acc.id.toString() === value
-      );
+  const handleFilterChange = (e, actionMeta) => {
+    if (actionMeta.name === "tagName") {
       setFilterTrans((prevData) => ({
         ...prevData,
-        [name]: value,
-        accountId: selectedAccount ? selectedAccount.id : 0,
-        accName: selectedAccount ? selectedAccount.account_name : "",
+        tagName: e || [],
       }));
-    } else {
+    } else if (actionMeta.name === "accNameId") {
+      setFilterTrans((prevData) => ({
+        ...prevData,
+        accNameId: e || [],
+        accountId: e.map((option) => option.value) || [],
+      }));
+    } else if (e.target) {
+      const { name, value } = e.target;
       setFilterTrans((prevData) => ({
         ...prevData,
         [name]: value,
@@ -58,22 +59,25 @@ const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
   };
 
   const applyFilter = () => {
-    console.log("applyFilter ", filterTrans);
-    dispatch(FilteredTransactionsByDate(
-      {
-        transaction_tag:filterTrans.tagName,
-        filter:filterTrans.filter,
-        accountId:filterTrans.accountId,
-      }
-    ));
+    console.log("Applied Filters:", filterTrans);
+    const accountIds = Array.isArray(filterTrans.accNameId) 
+    ? filterTrans.accNameId.map((acc) => acc.value) 
+    : [];
+    dispatch(
+      FilteredTransactionsByDate({
+        transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],
+        filter: filterTrans.filter,
+        accountId: accountIds,
+      })
+    );
     setFilterTrans(filterState);
     onClose();
   };
 
   useEffect(() => {
     dispatch(allAccounts());
-   setFilterTrans({filter: filterType});
-  }, [dispatch,filterType]);
+    setFilterTrans({ filter: filterType });
+  }, [dispatch, filterType]);
 
   if (!filterTransModalOpen) return null;
 
@@ -97,37 +101,31 @@ const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
           <label className="text-sm font-medium" htmlFor="accountSelect">
             Account
           </label>
-          <select
-            className="block border rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
-            id="accountSelect"
+          <Select
+            className="block rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-300 hover:border-gray-500 focus:outline-none"
             name="accNameId"
-            //multiple
+            options={accounts.map((acc) => ({
+              value: acc.id,
+              label: acc.account_name,
+            }))}
+            onChange={(selectedOptions) =>
+              handleFilterChange(selectedOptions, { name: "accNameId" })
+            }
             value={filterTrans.accNameId}
-            onChange={handleFilterChange}
-          >
-            {accounts.map((accdata) => (
-              <option key={accdata.id} value={accdata.id} className="text-sm">
-                {accdata.account_name}
-              </option>
-            ))}
-          </select>
+            isMulti
+          />
+
           <label className="text-sm font-medium" htmlFor="tagSelect">
             Tags
           </label>
-          <select
-            className="block border rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
-            id="tagSelect"
+          <Select
+            className="block rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-300 hover:border-gray-500 focus:outline-none"
             name="tagName"
-            value={filterTrans.tagName}
+            options={tagOptions}
             onChange={handleFilterChange}
-          >
-            {/* <option value="">Select a Tag</option> */}
-            {tagOptions.map((option) => (
-              <option key={option.id} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+            value={filterTrans.tagName}
+            isMulti
+          />
         </div>
         <div className="p-4 bg-gray-50 flex justify-end">
           <button

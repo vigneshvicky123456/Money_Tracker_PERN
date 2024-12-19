@@ -6,18 +6,20 @@ import { fetchReports } from "../../features/reportsSlice";
 const Expense_IncomeChart = () => {
   const dispatch = useDispatch();
   const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
-  const { incomeData = [], expenseData = [], amountData =[] } = useSelector((state) => state.reports);
+  const { incomeData = [], expenseData = [], amountData = [], tagAmountData = [] } = useSelector((state) => state.reports);
 
   const data = incomeData.length > 0 && expenseData.length > 0
       ? incomeData.map((income, index) => ({
           Month: ` ${income.month}`,
           TotalIncome: income.totalIncome || 0,
           TotalExpense: expenseData[index]?.totalExpense || 0,
+          TagIncome: tagAmountData[index]?.tagIncomeAmount || 0,
+          TagExpense: tagAmountData[index]?.tagExpenseAmount || 0,
         }))
       : [];
 
-      const TotalIncomeAmount = amountData[0]?.totalIncomeAmount || 0;
-      const TotalExpenseAmount = amountData[0]?.totalExpenseAmount || 0;
+  const TotalIncomeAmount = amountData[0]?.totalIncomeAmount || 0;
+  const TotalExpenseAmount = amountData[0]?.totalExpenseAmount || 0;
 
   useEffect(() => {
     dispatch(fetchReports());
@@ -58,7 +60,15 @@ const Expense_IncomeChart = () => {
             fill="#B3CDAD"
           />
           <Bar
+            dataKey="TagIncome"
+            fill="#B3CDAD"
+          />
+          <Bar
             dataKey="TotalExpense"
+            fill="#FF5F5E"
+          />
+          <Bar
+            dataKey="TagExpense"
             fill="#FF5F5E"
           />
         </BarChart>

@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NewModal from "../Components/Transactions/NewModal";
-import RecentTransactions from "../Components/Dashboard/RecentTransactions";
+import TransactionsTable from "../Components/Transactions/TransactionsTable";
 import FilterModal from "../Components/Transactions/FilterModal";
 import { FilteredTransactionsByDate} from '../features/filterByDateSlice';
 
@@ -28,7 +28,7 @@ useEffect(() => {
 
   return (
     <div>
-      <div className="fixed h-[62px] bg-indigo-700 border-b border-gray-300 w-full">
+      <div className="fixed z-10 h-[62px] bg-indigo-700 border-b border-gray-300 w-full">
         <h1 className="ml-[19px] pt-3 text-white text-2xl">Transactions</h1>
       </div>
       <div className="bg-gray-100 pt-[80px] h-screen overflow-y-scroll">
@@ -62,7 +62,6 @@ useEffect(() => {
                 <option value="last7days">Last 7 Days</option>
                 <option value="last30days">Last 30 Days</option>
                 <option value="thismonth">This Month</option>
-                {/* <option value="custom">Custom Date</option> */}
               </select>
             </div>
             <div className="relative">
@@ -82,7 +81,7 @@ useEffect(() => {
           </div>
 
           <div className="w-[100%] bg-white">
-            <RecentTransactions />
+            <TransactionsTable />
           </div>
 
           <div className="ml-[560px] w-[40%]">

@@ -12,12 +12,11 @@ const Transfer = () => {
   const newTransferState = {
     type: "Transfer",
     fromName: "",
-    fromNameId: "",
+    fromNameId: 0,
     fromAmount: 0,
     fromCode: "",
     toName: "",
-    toNameId: "",
-    toAmount: 0,
+    toNameId: 0,
     toCode: "",
     date: new Date().toISOString().slice(0, 10),
     note: "",
@@ -45,24 +44,36 @@ const Transfer = () => {
 
   useEffect(() => {
     if (accounts.length > 0) {
-      const firstAccount = accounts[0];
+      const firstAccount = accounts[1];
       setNewTransfer((prev) => ({
         ...prev,
         fromNameId: firstAccount.id.toString(),
         fromName: firstAccount.account_name,
         fromCode: firstAccount.account_currency_code,
+        accountId: firstAccount.id || 0,
+        accountGroup: firstAccount.account_type || "",
+        accountBalance: firstAccount.account_balance || 0,
+        accountCurrency: firstAccount.account_currency_name || "",
+        accountCheck: firstAccount.account_currency_name_check || false,
+        accountDashboard: firstAccount.show_on_dashboard || false,
       }));
     }
   }, [accounts]);
 
   useEffect(() => {
     if (accounts.length > 0) {
-      const secondAccount = accounts[1];
+      const secondAccount = accounts[2];
       setNewTransfer((prev) => ({
         ...prev,
         toNameId: secondAccount.id.toString(),
         toName: secondAccount.account_name,
         toCode: secondAccount.account_currency_code,
+        toAccountId: secondAccount.id || 0,
+        toAccountGroup: secondAccount.account_type || "",
+        toAccountBalance: secondAccount.account_balance || 0,
+        toAccountCurrency: secondAccount.account_currency_name || "",
+        toAccountCheck: secondAccount.account_currency_name_check || false,
+        toAccountDashboard: secondAccount.show_on_dashboard || false,
       }));
     }
   }, [accounts]);
@@ -122,11 +133,13 @@ const Transfer = () => {
           transaction_from_amount: newTransfer.fromAmount,
           transaction_from_code: newTransfer.fromCode,
           transaction_to_name: newTransfer.toName,
-          transaction_to_amount: newTransfer.toAmount,
+          transaction_to_amount: newTransfer.fromAmount,
           transaction_to_code: newTransfer.toCode,
           transaction_tag: "",
           transaction_note: newTransfer.note,
           transaction_date: newTransfer.date,
+          transaction_to_name_id: newTransfer.toNameId,
+          transaction_from_name_id: newTransfer.fromNameId,
         })
       );
       const subAmount = newTransfer.accountBalance - newTransfer.fromAmount;
@@ -142,7 +155,7 @@ const Transfer = () => {
           show_on_dashboard: newTransfer.accountDashboard,
         })
       );
-      const addAmount = parseInt(newTransfer.toAccountBalance)  + parseInt(newTransfer.toAmount);
+      const addAmount = parseInt(newTransfer.toAccountBalance)  + parseInt(newTransfer.fromAmount);
       dispatch(
         updateAccount({
           id: newTransfer.toAccountId,
@@ -179,7 +192,6 @@ const Transfer = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
             ;
@@ -220,7 +232,6 @@ const Transfer = () => {
                 className="hover:bg-red-500 text-sm focus:bg-green-500"
               >
                 {accdata.account_name}
-                {/* {accdata.account_type} */}
               </option>
             ))}
           </select>
@@ -230,7 +241,7 @@ const Transfer = () => {
             className="w-[90px] p-[6px] rounded-l focus:border-blue-400 focus:outline-none"
             type="number"
             name="toAmount"
-            value={newTransfer.toAmount}
+            value={newTransfer.fromAmount}
             onChange={accountTransferChange}
           />
           <span className="p-[10px] pl-[24px] text-gray-700 text-sm bg-gray-300 rounded-r">

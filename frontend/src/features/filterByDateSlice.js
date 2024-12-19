@@ -11,7 +11,7 @@ export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchF
       url += `&transaction_tag=${transaction_tag}`
     }
     if (accountId) {
-      url += `&accountId=${''}`
+      url += `&accountId=${accountId}`
     }
     console.log(`Final URL: ${url}`);
     const response = await axios.get(url);
@@ -21,7 +21,6 @@ export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchF
   }
 );
 
-//&accountId=
 const filterByDateSlice = createSlice({
   name: "filterByDate",
   initialState: {
