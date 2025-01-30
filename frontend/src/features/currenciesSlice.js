@@ -27,7 +27,6 @@ export const addSelectedCurrency = createAsyncThunk('currency/addSelectedCurrenc
 });
 
 
-
 export const addCurrency = createAsyncThunk('currency/addCurrency', async (currency) => {
     const response = await axios.post(`http://localhost:3003/currencies`, currency);
     return response.data;
@@ -49,8 +48,7 @@ const currencySlice = createSlice({
     initialState: {
         currencies: [],
         selectedCurrency: {},
-        currencyModel1: {},
-      
+        currencyModel1: {}, 
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -67,7 +65,6 @@ const currencySlice = createSlice({
             .addCase(addSelectedCurrency.fulfilled, (state, action) => {
                 state.selectedCurrency = action.payload;
               })
-
 
             .addCase(addCurrency.fulfilled, (state, action) => {
                 state.currencies.push(action.payload);

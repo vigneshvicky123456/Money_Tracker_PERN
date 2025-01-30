@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faPencil  } from "@fortawesome/free-solid-svg-icons";
 import { getSingleNewTransaction } from "../../features/newTransactionsSlice";
 import EditModal from "../Transactions/Edit Transaction/EditModal";
 import { allNewTransactions } from "../../features/newTransactionsSlice"
@@ -60,8 +62,9 @@ const RecentTransactions = () => {
                     {history.transaction_from_name ||
                       history.transaction_to_name}
                   </span>
+                  <span> {history.transaction_from_name ? (<span> <FontAwesomeIcon icon={faArrowRight} className="text-gray-500" /></span>) : (<span> <FontAwesomeIcon icon={faArrowLeft} className="text-gray-500" /></span>)}</span>
                   {history.transaction_tag ? (
-                    <span className="border-[1.5px] border-gray-300 bg-gray-200 rounded p-1">
+                    <span className="border-[1.5px] border-gray-300 text-gray-500 text-sm bg-gray-200 rounded p-1">
                       {history.transaction_tag}
                     </span>
                   ) : (
@@ -95,11 +98,11 @@ const RecentTransactions = () => {
                       history.transaction_to_code}
                   </span>
                   <button
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="border border-gray-300 m-1 ml-3 rounded-full xt-gray-600te w-10 h-10 px-2 py-1 hover:border-gray-400"
                     type="button"
                     onClick={() => showTransModal(history.id)}
                   >
-                    Edit
+                     <FontAwesomeIcon icon={faPencil} />
                   </button>
                   {editTransModal && (
                      <EditModal

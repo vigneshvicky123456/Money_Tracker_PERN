@@ -1,4 +1,6 @@
 import { React, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import NewAccount from "../Components/Accounts/NewAccount";
 import TableAccount from "../Components/Accounts/TableAccount";
 
@@ -20,8 +22,8 @@ const Accounts = () => {
                   type="button"
                   onClick={() => setNewModal(true)}
                 >
-                  <p className="px-3 py-[6px] bg-gray-200">+</p>
-                  <span className="text-sm text-gray-500 mr-[5px] px-[20px] py-[6px] relative">
+                  <p className="px-3 py-[6px] bg-gray-200 text-gray-700 text-sm hover:text-black"><FontAwesomeIcon icon={faPlus} /></p>
+                  <span className="text-sm text-gray-500 hover:text-black mr-[5px] px-[20px] py-[6px] relative">
                     New
                   </span>
                 </button>
@@ -38,7 +40,6 @@ const Accounts = () => {
 
           </div>
         </div>
-      
     </div>
   );
 };

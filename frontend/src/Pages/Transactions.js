@@ -1,5 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faFilter  } from "@fortawesome/free-solid-svg-icons";
 import NewModal from "../Components/Transactions/NewModal";
 import TransactionsTable from "../Components/Transactions/TransactionsTable";
 import FilterModal from "../Components/Transactions/FilterModal";
@@ -17,12 +19,10 @@ const Transactions = () => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value)
-    console.log('handleFilterChange setFilter:',e.target.value);
 };
 
 useEffect(() => {
   dispatch(FilteredTransactionsByDate({filter}));
-  console.log("Transactions useEffect filter: ",filter);
 },[dispatch,filter]);
 
 
@@ -40,8 +40,8 @@ useEffect(() => {
                 type="button"
                 onClick={() => setNewTransModal(true)}
               >
-                <p className="px-3 py-[6px] bg-gray-200">+</p>
-                <span className="text-sm text-gray-500 mr-[5px] px-[20px] py-[6px] relative">
+                <p className="px-3 py-[8px] bg-gray-200 text-gray-700 text-sm hover:text-black"><FontAwesomeIcon icon={faPlus} /></p>
+                <span className="text-sm text-gray-500 mr-[5px] px-[20px] py-[6px] relative hover:text-black">
                   New
                 </span>
               </button>
@@ -52,7 +52,7 @@ useEffect(() => {
             </div>
             <div className="relative">
               <select
-                className="p-[8px] border border-gray-300 px-5 text-gray-500 text-sm focus:outline-none"
+                className="p-[8px] border border-gray-300 px-5 hover:text-black text-gray-500 text-sm focus:outline-none"
                 value={filter}
                 onChange={handleFilterChange}
               >
@@ -66,11 +66,11 @@ useEffect(() => {
             </div>
             <div className="relative">
             <button
-                className="border border-gray-300 bg-white rounded-r flex px-3 py-[6px]"
+                className="border border-gray-300 bg-white text-sm text-gray-500 rounded-r flex px-4 py-[11px] hover:text-black"
                 type="button"
                 onClick={() => setFilterTransModal(true)}
               >
-                ?
+                 <FontAwesomeIcon icon={faFilter} />
               </button>
               <FilterModal
                 filterTransModalOpen={filterTransModal}

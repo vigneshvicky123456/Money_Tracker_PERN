@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import EditExpense from "./EditExpense";
 import EditTransfer from "./EditTransfer";
 import EditIncome from "./EditIncome";
 
 const EditModal = ({ editTransModalOpen, onClose }) => {
-  const dispatch = useDispatch();
   const selectedNewTransaction = useSelector((state) => state.newTransaction.selectedNewTransaction);
 
   const [activeTab, setActiveTab] = useState('Expense');
   const tabs = ["Expense", "Transfer", "Income"];
 
-  useEffect(() => {
+  useEffect(() => { 
        
      if (selectedNewTransaction) {
     const { transaction_type } = selectedNewTransaction;
@@ -31,7 +32,7 @@ const EditModal = ({ editTransModalOpen, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
       <div className="bg-white w-full max-w-[45%] h-[full] rounded-[5px] shadow-lg">
         <div className="flex justify-between items-center px-5 py-[13px] border-b ">
-          <h2 className="text-lg">Edit Transaction</h2>
+          <h2 className="text-lg"><FontAwesomeIcon icon={faFile} className="text-3xl text-gray-600 pr-2" /> Edit Transaction</h2>
           <button
             onClick={closeEditTransModal}
             className="text-gray-500 hover:text-gray-700 text-3xl font-bold"

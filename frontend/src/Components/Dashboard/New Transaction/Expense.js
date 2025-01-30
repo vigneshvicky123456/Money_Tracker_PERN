@@ -125,7 +125,6 @@ const Expense = () => {
           show_on_dashboard: newExpense.accountDashboard,
         })
       );
-      console.log("saveExpense ", newExpense);
       setNewExpense(newExpenseState);
     }
   };

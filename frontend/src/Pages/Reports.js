@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { allAccounts } from "../features/accountsSlice";
 import { fetchReports, fetchTagExpenseReports, fetchNetIncomeReports, fetchNetWorthReports } from "../features/reportsSlice";
 import Expense_IncomeChart from "../Components/Reports/Expense_IncomeChart";
@@ -41,6 +43,8 @@ const Reports = () => {
   };
 
   const [filterTrans, setFilterTrans] = useState(filterState);
+  const [isClickedNext, setIsClickedNext] = useState(false);
+  const [isClickedPrev, setIsClickedPrev] = useState(false);
 
   useEffect(() => {
     dispatch(allAccounts());
@@ -77,6 +81,7 @@ const Reports = () => {
   };
 
   const handlePreviousDate = () => {
+    setIsClickedPrev(true);
     setCurrentDate((prev) => {
       const newDate = new Date(prev);
       if (view === "monthly") {
@@ -86,9 +91,13 @@ const Reports = () => {
       }
       return newDate;
     });
+    setTimeout(() => {
+      setIsClickedPrev(false);
+    }, 200);
   };
 
   const handleNextDate = () => {
+    setIsClickedNext(true);
     setCurrentDate((prev) => {
       const newDate = new Date(prev);
       if (view === "monthly") {
@@ -98,6 +107,9 @@ const Reports = () => {
       }
       return newDate;
     });
+    setTimeout(() => {
+      setIsClickedNext(false);
+    }, 200);
   };
 
   const chartView = () => {
@@ -122,34 +134,26 @@ const Reports = () => {
     if (reportsType === "Expense_Income") {
       if (view === "yearly") {
         dispatch(fetchReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
         dispatch(fetchReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & monthYear: ", reportsType, monthYear, filterTrans);
       }
     } else if (reportsType === "ExpensebyTags") {
       if (view === "yearly") {
         dispatch(fetchTagExpenseReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
         dispatch(fetchTagExpenseReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
       }
     } else if (reportsType === "NetIncome") {
       if (view === "yearly") {
         dispatch(fetchNetIncomeReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
         dispatch(fetchNetIncomeReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
       } 
     } else if (reportsType === "NetWorth") {
       if (view === "yearly") {
         dispatch(fetchNetWorthReports({ reportsType, year, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & year: ", reportsType, year, filterTrans);
       } else {
         dispatch(fetchNetWorthReports({ reportsType, monthYear, transaction_tag: filterTrans.tagName?.map((tag) => tag.value) || [],  accountId: accountIds, }));
-        console.log("Reports useEffect ReportsType & monthYear: ",reportsType, monthYear, filterTrans);
       }
     }
   }, [view, reportsType, currentDate, monthYear, year, filterTrans ]);
@@ -164,7 +168,7 @@ const Reports = () => {
           <div className="border-b border-gray-300  p-[15px] bg-gray-50 flex">
             <div className="bg-white  rounded">
               <select
-                className=" border border-gray-300 px-3 py-[10px] rounded-l text-sm text-gray-500 focus:outline-none w-[full]"
+                className=" border border-gray-300 px-3 py-[10px] rounded-l text-sm text-gray-500 focus:outline-none w-[full] hover:text-black"
                 value={reportsType}
                 onChange={handleReportsTypeChange}
               >
@@ -174,24 +178,28 @@ const Reports = () => {
                 <option value="NetWorth">Net Worth</option>
               </select>
               <button
-                className="border-y border-gray-300 px-3 pb-[9px] py-[7px]"
+                className={`border-y border-gray-300 px-3 pb-[9px] py-[7px] text-gray-400 hover:text-black ${
+                  isClickedPrev ? "bg-gray-200" : ""
+                }`}
                 onClick={handlePreviousDate}
               >
-                -
+                <FontAwesomeIcon icon={faChevronLeft} />
               </button>
               <select
-                className=" border border-gray-300 px-3 py-[10px] text-sm text-gray-500 focus:border-gray-400 hover:border-gray-400 focus:outline-none"
+                className=" border border-gray-300 px-3 py-[10px] text-sm text-gray-500 hover:text-black focus:border-gray-400 hover:border-gray-400 focus:outline-none"
                 value={view}
                 onChange={handleDateChange}
               >
-                <option value="yearly">Yearly</option>
-                <option value="monthly">Monthly</option>
+                <option value="yearly">{view === "yearly" ? year : "Yearly"}</option>
+                <option value="monthly">{view === "monthly" ? monthYear : "Monthly"}</option>
               </select>
               <button
-                className="border-r border-y border-gray-300 rounded-r px-3 pb-[9px] py-[7px]"
+                 className={`border-r border-y border-gray-300 rounded-r px-3 pb-[9px] py-[7px] text-gray-400 hover:text-black ${
+                  isClickedNext ? "bg-gray-200" : ""
+                }`}
                 onClick={handleNextDate}
               >
-                +
+                <FontAwesomeIcon icon={faChevronRight} />
               </button>
             </div>
           </div>
@@ -213,6 +221,7 @@ const Reports = () => {
              <Select
                className="block rounded p-[10px] mt-[5px] mb-[16px] w-full text-sm focus:border-blue-300 hover:border-gray-500 focus:outline-none"
                name="accNameId"
+               placeholder="Specify accounts"
                options={accounts.map((acc) => ({
                value: acc.id,
                label: acc.account_name,
@@ -225,6 +234,7 @@ const Reports = () => {
              <Select
                className="block mt-[16px] rounded p-[10px] w-full text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
                name="tagName"
+               placeholder="Exclude tags"
                options={tagOptions}
                onChange={handleTransTagChange}
                value={filterTrans.tagName}

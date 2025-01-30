@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { getSelectedCurrency } from "../../features/currenciesSlice";
 import { updateAccount } from "../../features/accountsSlice"
 import DeleteAccount from "./DeleteAccount";
@@ -40,7 +42,6 @@ const EditAccount = ({ editModalOpen, onClose }) => {
 
   useEffect(() => {
     dispatch(getSelectedCurrency());
-    console.log('EditAccount useEffect:: ',selectedAccount);
    if (selectedAccount) {
     setEditAccounts({
       id: selectedAccount.id,
@@ -82,7 +83,7 @@ const EditAccount = ({ editModalOpen, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
       <div className="bg-white w-full max-w-[56%] h-[340px] rounded-[5px] shadow-lg">
         <div className="flex justify-between items-center px-5 py-[13px] border-b ">
-          <h2 className="text-lg">Edit Account</h2>
+          <h2 className="text-lg"><FontAwesomeIcon icon={faFile} className="text-3xl text-gray-600 pr-2" /> Edit Account</h2>
           <button
             onClick={closeEditModal}
             className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
@@ -181,13 +182,13 @@ const EditAccount = ({ editModalOpen, onClose }) => {
             </button>
           </div>
         </div>
-        <div className="w-[100px] pt-3 flex pl-[620px]">
+        <div className="pt-3 flex pl-[600px]">
             <button 
-              className="border text-sm rounded px-4 py-2 bg-red-500 text-white"
+              className="w-[100px] border text-sm rounded px-4 py-2 bg-red-500 text-white"
               type="button"
               onClick={() => setDeleteModal(true)} 
             >
-              Delete
+              Delete <FontAwesomeIcon icon={faTrash} className="pl-2" />
             </button>
             <DeleteAccount 
               deleteModalOpen={deleteModal}

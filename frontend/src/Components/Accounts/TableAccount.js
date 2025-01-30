@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil  } from "@fortawesome/free-solid-svg-icons";
 import { allAccounts, getSingleAccount } from "../../features/accountsSlice";
 import EditAccount from "./EditAccount";
 
@@ -78,11 +80,11 @@ const TableAccount = () => {
                         {parseFloat(accdata.account_balance)} {accdata.account_currency_code ? accdata.account_currency_code :'NAN' }
                       </span>
                       <button
-                        className="border border-gray-300 m-1 rounded px-2 py-1"
+                        className="border border-gray-300 m-1 ml-3 rounded-full text-gray-600 w-10 h-10 px-2 py-1 hover:border-gray-400"
                         type="button"
                         onClick={() => showEditModal(accdata.id)}
                       >
-                        Edit
+                        <FontAwesomeIcon icon={faPencil} />
                       </button>
                     </div>
                   </div>

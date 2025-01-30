@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { allAccounts, updateAccount } from "../../../features/accountsSlice";
 import { updateNewTransaction, deleteNewTransaction } from "../../../features/newTransactionsSlice";
 
@@ -219,7 +221,6 @@ const EditTransfer = ({ editOnClose }) => {
           } else {
             console.error("toAccountId is missing or invalid.");
           }
-          console.log("saveEditTransfer: ", updatedTransfer);
           setEditTransfer(editTransferState);
           editOnClose();
       };
@@ -341,7 +342,7 @@ const EditTransfer = ({ editOnClose }) => {
             className="border rounded bg-red-600 py-2 px-4 text-white hover:bg-red-700 focus:outline-none"
             onClick={() => deleteTransactionById(selectedNewTransaction.id)}
           >
-            Delete
+            Delete <FontAwesomeIcon icon={faTrash} className="pl-2" />
           </button>
         </div>
     </div>

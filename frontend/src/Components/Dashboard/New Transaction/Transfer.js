@@ -168,7 +168,6 @@ const Transfer = () => {
           show_on_dashboard: newTransfer.toAccountDashboard,
         })
       );
-      console.log("saveTransfer ", newTransfer);
       setNewTransfer(newTransferState);
     }
   };

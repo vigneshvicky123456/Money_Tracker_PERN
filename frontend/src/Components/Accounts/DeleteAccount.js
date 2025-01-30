@@ -1,5 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { deleteAccount } from "../../features/accountsSlice";
 
 const DeleteAccount = ({ deleteModalOpen, onClose, editOnClose }) => {
@@ -8,9 +10,9 @@ const DeleteAccount = ({ deleteModalOpen, onClose, editOnClose }) => {
   if (!deleteModalOpen) return null;
 
   const deleteAccountById = (id) => {
-  dispatch(deleteAccount(id)); 
-  onClose(false);
-  editOnClose();
+    dispatch(deleteAccount(id)); 
+    onClose(false);
+    editOnClose();
   };
 
   const closeDeleteModal = () => {
@@ -21,7 +23,7 @@ const DeleteAccount = ({ deleteModalOpen, onClose, editOnClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 bg-opacity-50">
       <div className="bg-white w-full max-w-[56%] h-[380px] rounded-[5px] shadow-lg">
         <div className="flex justify-between items-center px-5 py-[13px] border-b ">
-          <h2 className="text-lg">Edit Account</h2>
+          <h2 className="text-lg"><FontAwesomeIcon icon={faFile} className="text-3xl text-gray-600 pr-2" /> Edit Account</h2>
           <button
             onClick={closeDeleteModal}
             className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
@@ -80,7 +82,7 @@ const DeleteAccount = ({ deleteModalOpen, onClose, editOnClose }) => {
                   <span className="text-sm text-white mr-[5px] px-[20px] py-[6px] relative">
                     Proceed
                   </span>
-                  <p className="px-3 py-[6px] text-white bg-red-600 ">=</p>
+                  <p className="px-3 py-[6px] text-white bg-red-600 rounded-r"><FontAwesomeIcon icon={faArrowRight} /></p>
                 </button>
           </div>
           <div className="flex pr-5 pt-2.5">

@@ -59,7 +59,6 @@ const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
   };
 
   const applyFilter = () => {
-    console.log("Applied Filters:", filterTrans);
     const accountIds = Array.isArray(filterTrans.accNameId) 
     ? filterTrans.accNameId.map((acc) => acc.value) 
     : [];
@@ -129,13 +128,13 @@ const FilterModal = ({ filterTransModalOpen, onClose, filterType }) => {
         </div>
         <div className="p-4 bg-gray-50 flex justify-end">
           <button
-            className="px-4 py-1 bg-gray-300 rounded border text-gray-600 mr-3"
+            className="px-4 py-1 bg-gray-300 rounded border text-gray-600 mr-3 hover:bg-gray-400"
             onClick={resetFilters}
           >
             Reset
           </button>
           <button
-            className="px-4 py-1 bg-green-500 rounded border text-white"
+            className="px-4 py-1 bg-green-500 rounded border text-white hover:bg-green-700"
             onClick={applyFilter}
           >
             Apply

@@ -5,7 +5,6 @@ import axios from "axios";
 
 // FilteredTransactionsByDate
 export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchFilteredItems", async ({filter, transaction_tag, accountId}) => {
-  console.log(`ASYNC FilteredTransactionsByDate/filterByDate?filter=${filter}&transaction_tag=${transaction_tag}`);
     let url = `http://localhost:3003/filterByDate?filter=${filter}`
     if (transaction_tag) {
       url += `&transaction_tag=${transaction_tag}`
@@ -13,10 +12,7 @@ export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchF
     if (accountId) {
       url += `&accountId=${accountId}`
     }
-    console.log(`Final URL: ${url}`);
     const response = await axios.get(url);
-    console.log('ASYNC FilteredTransactionsByDate response: ',response.data);
-    
     return response.data;
   }
 );
@@ -26,13 +22,10 @@ const filterByDateSlice = createSlice({
   initialState: {
     filteredTransactions: [],
   },
-  reducers: {
-   
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(FilteredTransactionsByDate.fulfilled, (state, action) => {
       state.filteredTransactions = action.payload;
-      console.log("slice filtered items:", state.filteredTransactions);
     });
   },
 });

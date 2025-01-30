@@ -5,7 +5,6 @@ import axios from "axios";
 
 // Async thunk to fetch reports from the backend
 export const fetchReports = createAsyncThunk('reports/fetchReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  console.log(`ASYNC fetchReports reportsType=${reportsType}&year=${year}&monthYear=${monthYear}`);
   let url = `http://localhost:3003/reports/expenseIncome?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
@@ -20,17 +19,12 @@ export const fetchReports = createAsyncThunk('reports/fetchReports', async ({ re
     url += `&accountId=${accountId}`
   }
 
-  console.log(`Final URL: ${url}`);
   const response = await axios.get(url);
-  console.log('ASYNC fetchReports response:', response.data);
   return response.data;
 });
 
-
-
 // Async thunk to fetchTagExpenseReports from the backend
 export const fetchTagExpenseReports = createAsyncThunk('reports/fetchTagExpenseReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  console.log(`ASYNC fetchTagExpenseReports reportsType=${reportsType}&year=${year}&monthYear=${monthYear}`);
   let url = `http://localhost:3003/reports/expensebytags?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
@@ -45,16 +39,12 @@ export const fetchTagExpenseReports = createAsyncThunk('reports/fetchTagExpenseR
     url += `&accountId=${accountId}`
   }
   
-  console.log(`Final URL: ${url}`);
   const response = await axios.get(url);
-  console.log('ASYNC fetchTagExpenseReports response:', response.data);
   return response.data;
 });
 
-
 // Async thunk to NetIncome reports from the backend
 export const fetchNetIncomeReports = createAsyncThunk('reports/fetchNetIncomeReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  console.log(`ASYNC fetchReports reportsType=${reportsType}&year=${year}&monthYear=${monthYear}`);
   let url = `http://localhost:3003/reports/netIncome?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
@@ -69,16 +59,12 @@ export const fetchNetIncomeReports = createAsyncThunk('reports/fetchNetIncomeRep
     url += `&accountId=${accountId}`
   }
 
-  console.log(`Final URL: ${url}`);
   const response = await axios.get(url);
-  console.log('ASYNC fetchNetIncomeReports response:', response.data);
   return response.data;
 });
 
-
 // Async thunk to NetWorth reports from the backend
 export const fetchNetWorthReports = createAsyncThunk('reports/fetchNetWorthReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  console.log(`ASYNC fetchReports reportsType=${reportsType}&year=${year}&monthYear=${monthYear}`);
   let url = `http://localhost:3003/reports/netWorth?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
@@ -93,13 +79,9 @@ export const fetchNetWorthReports = createAsyncThunk('reports/fetchNetWorthRepor
     url += `&accountId=${accountId}`
   }
 
-  console.log(`Final URL: ${url}`);
   const response = await axios.get(url);
-  console.log('ASYNC fetchNetWorthReports response:', response.data);
   return response.data;
 });
-
-
 
 
 const reportsSlice = createSlice({

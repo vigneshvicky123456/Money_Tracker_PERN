@@ -118,7 +118,6 @@ const Income = () => {
           show_on_dashboard: newIncome.toAccountDashboard,
         })
       );
-      console.log("saveIncome ", newIncome);
       setNewIncome(newIncomeState);
     }
   };

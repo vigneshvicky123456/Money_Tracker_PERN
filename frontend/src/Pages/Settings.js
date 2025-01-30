@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  allCurrencies,
-  getSingleCurrency,
-  addSelectedCurrency,
-  getSelectedCurrency,
-} from "../features/currenciesSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretRight, faCaretDown  } from "@fortawesome/free-solid-svg-icons"; 
+import { allCurrencies, getSingleCurrency, addSelectedCurrency, getSelectedCurrency } from "../features/currenciesSlice";
 
 const Settings = () => {
   const dispatch = useDispatch();
   const currencyModel1 = useSelector((state) => state.currency.currencyModel1);
   const { currencies } = useSelector((state) => state.currency);
+  
   const [selectedDropdown, SetSelectedDropdown] = useState();
+  const [isVisible, setIsVisible] = useState(false);
 
   const handleSelectCurrency = (e) => {
-    dispatch(getSingleCurrency(e.target.value));
-    const selectedCurrencyId = parseInt(e.target.value);
+    const selectedCurrencyId = parseInt(e.target.value, 10);
+    dispatch(getSingleCurrency(selectedCurrencyId));
     dispatch(addSelectedCurrency(selectedCurrencyId));
+    SetSelectedDropdown(selectedCurrencyId);
   };
 
   useEffect(() => {
     dispatch(allCurrencies());
     dispatch(getSelectedCurrency());
-    SetSelectedDropdown(currencyModel1?.currency_id);
+    if (currencyModel1?.currency_id) {
+      SetSelectedDropdown(currencyModel1.currency_id); 
+    }
   }, [dispatch, currencyModel1?.currency_id]);
 
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleDiv = () => setIsVisible(!isVisible);
+  const toggleDiv = () => setIsVisible((prev) => !prev);
 
   return (
     <div className="top-0">
@@ -36,8 +36,8 @@ const Settings = () => {
         <div className="bg-gray-100 pt-[18px] h-screen">
           <div className="mx-[99px] p-[15px] shadow-custom bg-white w-[75%] border h-[full] rounded">
             <div className="flex">
-              <button onClick={toggleDiv} className="relative flex border p-1">
-                {isVisible ? ">" : ">"}
+              <button onClick={toggleDiv} className="relative flex p-1 pt-2">
+                {isVisible ? <FontAwesomeIcon icon={faCaretDown} /> : <FontAwesomeIcon icon={faCaretRight} />}
               </button>
               <h1 className="text-xl ml-1">CURRENCY</h1>
             </div>
@@ -55,7 +55,7 @@ const Settings = () => {
                       <select
                         id="currency"
                         name="currency"
-                        value={selectedDropdown}
+                        value={selectedDropdown || ""}
                         onChange={handleSelectCurrency}
                         className="border rounded-[5px] p-[9px] w-[455px] text-sm focus:border-blue-400 hover:border-gray-400 focus:outline-none"
                       >
@@ -87,7 +87,6 @@ const Settings = () => {
                           className="text-grey-600"
                           value=""
                           disabled
-                          selected
                           hidden
                         >
                           Select additional currencies

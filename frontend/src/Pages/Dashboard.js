@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretRight, faCaretDown  } from "@fortawesome/free-solid-svg-icons"; 
 import NetWorth from "../Components/Dashboard/NetWorth";
 import NewTransaction from "../Components/Dashboard/New Transaction/NewTransaction";
 import RecentTransactions from "../Components/Dashboard/RecentTransactions";
@@ -22,8 +24,11 @@ const Dashboard = () => {
 
           <div className="w-full md:w-[37.5%] px-[15px] py-[10px]">
             <div className="flex items-center">
-              <button onClick={netWorthShow} className="relative flex border p-1">
-                {netWorthVisible ? "v" : ">"}
+              <button 
+                onClick={netWorthShow} 
+                className="relative flex pr-1"
+              >
+                {netWorthVisible ? <FontAwesomeIcon icon={faCaretDown} /> : <FontAwesomeIcon icon={faCaretRight} />}
               </button>
               <h1 className="text-xl ml-1">NET WORTH</h1>
             </div>
@@ -40,9 +45,9 @@ const Dashboard = () => {
             <div className="flex items-center">
               <button
                 onClick={newTransactionShow}
-                className="relative flex border p-1"
+                className="relative flex pr-1"
               >
-                {transVisible ? "v" : ">"}
+                {transVisible ? <FontAwesomeIcon icon={faCaretDown} /> : <FontAwesomeIcon icon={faCaretRight} />}
               </button>
               <h1 className="text-xl ml-1">NEW TRANSACTIONS</h1>
             </div>
@@ -57,9 +62,9 @@ const Dashboard = () => {
             <div className="flex items-center mt-[17px]">
               <button
                 onClick={recentTransactionShow}
-                className="relative flex border p-1"
+                className="relative flex pr-1"
               >
-                {recentTransVisible ? "v" : ">"}
+                {recentTransVisible ? <FontAwesomeIcon icon={faCaretDown} /> : <FontAwesomeIcon icon={faCaretRight} />}
               </button>
               <h1 className="text-xl ml-1">RECENT TRANSACTIONS</h1>
             </div>
