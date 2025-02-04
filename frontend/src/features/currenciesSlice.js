@@ -3,42 +3,44 @@ import axios from 'axios';
 
 // Thunks API requests
 
+const API_URL = "https://money-tracker-pern.onrender.com";
+
 // Get All Currencies
 export const allCurrencies = createAsyncThunk('currency/allCurrencies', async () => {
-    const response = await axios.get(`http://localhost:3003/currencies`);
+    const response = await axios.get(`${API_URL}/currencies`);
     return response.data;
 });
 
 // Get Single Currency
 export const getSingleCurrency = createAsyncThunk('currency/getSingleCurrency', async (id) => {
-    const response = await axios.get(`http://localhost:3003/currencies/${id}`);
+    const response = await axios.get(`${API_URL}/currencies/${id}`);
     return response.data;
 });
 
 // Get The Selected Currency
 export const getSelectedCurrency = createAsyncThunk('currency/getSelectedCurrency', async () => {
-    const response = await axios.get(`http://localhost:3003/selectedCurrency`);
+    const response = await axios.get(`${API_URL}/selectedCurrency`);
     return response.data;
   });
 // Post Selected Currency 
 export const addSelectedCurrency = createAsyncThunk('currency/addSelectedCurrency', async (currency_id) => {
-    const response = await axios.post(`http://localhost:3003/selectedCurrency`, { currency_id });
+    const response = await axios.post(`${API_URL}/selectedCurrency`, { currency_id });
     return response.data;
 });
 
 
 export const addCurrency = createAsyncThunk('currency/addCurrency', async (currency) => {
-    const response = await axios.post(`http://localhost:3003/currencies`, currency);
+    const response = await axios.post(`${API_URL}/currencies`, currency);
     return response.data;
 });
 
 export const updateCurrency = createAsyncThunk('currency/updateCurrency', async ({ id, currency }) => {
-    const response = await axios.put(`http://localhost:3003/currencies/${id}`, currency);
+    const response = await axios.put(`${API_URL}currencies/${id}`, currency);
     return response.data;
 });
 
 export const deleteCurrency = createAsyncThunk('currency/deleteCurrency', async (id) => {
-    await axios.delete(`http://localhost:3003/currencies/${id}`);
+    await axios.delete(`${API_URL}/currencies/${id}`);
     return id;
 });
 

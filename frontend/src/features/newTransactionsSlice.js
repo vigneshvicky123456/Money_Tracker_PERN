@@ -3,15 +3,17 @@ import axios from 'axios';
 
 // Thunks API requests
 
+const API_URL = "https://money-tracker-pern.onrender.com";
+
 // Get All newTransactions
 export const allNewTransactions = createAsyncThunk('newTransaction/allNewTransactions', async () => {
-    const response = await axios.get(`http://localhost:3003/newTransactions`);
+    const response = await axios.get(`${API_URL}/newTransactions`);
     return response.data;
 });
 
 // Get Single newTransactions
 export const getSingleNewTransaction = createAsyncThunk('newTransaction/getSingleNewTransaction', async (id) => {
-    const response = await axios.get(`http://localhost:3003/newTransactions/${id}`);
+    const response = await axios.get(`${API_URL}/newTransactions/${id}`);
     return response.data;
 });
 
@@ -31,7 +33,7 @@ export const addNewTransaction = createAsyncThunk('newTransaction/addNewTransact
     transaction_from_name_id
   }) => {
      
-    const response = await axios.post(`http://localhost:3003/newTransactions`,{
+    const response = await axios.post(`${API_URL}/newTransactions`,{
         transaction_type,
         transaction_from_name, 
         transaction_from_amount,
@@ -64,7 +66,7 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
     transaction_to_name_id,
     transaction_from_name_id
 }) => {
-    const response = await axios.put(`http://localhost:3003/newTransactions/${id}`,{
+    const response = await axios.put(`${API_URL}/newTransactions/${id}`,{
         id,
         transaction_type,
         transaction_from_name, 
@@ -84,7 +86,7 @@ export const updateNewTransaction = createAsyncThunk('newTransaction/updateNewTr
 
 // Delete Single newTransaction
 export const deleteNewTransaction = createAsyncThunk('newTransaction/deleteNewTransaction', async (id) => {
-    await axios.delete(`http://localhost:3003/newTransactions/${id}`);
+    await axios.delete(`${API_URL}/newTransactions/${id}`);
     return id;
 });
 

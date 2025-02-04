@@ -5,7 +5,7 @@ import axios from "axios";
 
 // FilteredTransactionsByDate
 export const FilteredTransactionsByDate = createAsyncThunk( "filterByDate/fetchFilteredItems", async ({filter, transaction_tag, accountId}) => {
-    let url = `http://localhost:3003/filterByDate?filter=${filter}`
+    let url = `https://money-tracker-pern.onrender.com/filterByDate?filter=${filter}`
     if (transaction_tag) {
       url += `&transaction_tag=${transaction_tag}`
     }

@@ -3,9 +3,11 @@ import axios from "axios";
 
 // Thunks API requests
 
+const API_URL = "https://money-tracker-pern.onrender.com";
+
 // Async thunk to fetch reports from the backend
 export const fetchReports = createAsyncThunk('reports/fetchReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  let url = `http://localhost:3003/reports/expenseIncome?reportsType=${reportsType}`;
+  let url = `${API_URL}/reports/expenseIncome?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
   }
@@ -25,7 +27,7 @@ export const fetchReports = createAsyncThunk('reports/fetchReports', async ({ re
 
 // Async thunk to fetchTagExpenseReports from the backend
 export const fetchTagExpenseReports = createAsyncThunk('reports/fetchTagExpenseReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  let url = `http://localhost:3003/reports/expensebytags?reportsType=${reportsType}`;
+  let url = `${API_URL}/reports/expensebytags?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
   }
@@ -45,7 +47,7 @@ export const fetchTagExpenseReports = createAsyncThunk('reports/fetchTagExpenseR
 
 // Async thunk to NetIncome reports from the backend
 export const fetchNetIncomeReports = createAsyncThunk('reports/fetchNetIncomeReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  let url = `http://localhost:3003/reports/netIncome?reportsType=${reportsType}`;
+  let url = `${API_URL}/reports/netIncome?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
   }
@@ -65,7 +67,7 @@ export const fetchNetIncomeReports = createAsyncThunk('reports/fetchNetIncomeRep
 
 // Async thunk to NetWorth reports from the backend
 export const fetchNetWorthReports = createAsyncThunk('reports/fetchNetWorthReports', async ({ reportsType, year, monthYear, transaction_tag, accountId }) => {
-  let url = `http://localhost:3003/reports/netWorth?reportsType=${reportsType}`;
+  let url = `${API_URL}/reports/netWorth?reportsType=${reportsType}`;
   if (year) {
     url += `&year=${year}`;
   }

@@ -3,15 +3,17 @@ import axios from 'axios';
 
 // Thunks API requests
 
+const API_URL = "https://money-tracker-pern.onrender.com";
+
 // Get All Accounts
 export const allAccounts = createAsyncThunk('account/allAccounts', async () => {
-    const response = await axios.get(`http://localhost:3003/accounts`);
+    const response = await axios.get(`${API_URL}/accounts`);
     return response.data;
 });
 
 // Get Single Accounts
 export const getSingleAccount = createAsyncThunk('account/getSingleAccount', async (id) => {
-    const response = await axios.get(`http://localhost:3003/accounts/${id}`);
+    const response = await axios.get(`${API_URL}/accounts/${id}`);
     return response.data;
 });
 
@@ -25,7 +27,7 @@ export const addAccount = createAsyncThunk('account/addAccount', async ({
     account_currency_name_check, 
     show_on_dashboard 
   }) => {
-    const response = await axios.post(`http://localhost:3003/accounts`,{
+    const response = await axios.post(`${API_URL}/accounts`,{
         account_name,
         account_type, 
         account_balance,
@@ -47,7 +49,7 @@ export const updateAccount = createAsyncThunk('account/updateAccount', async ({
     account_currency_name_check, 
     show_on_dashboard
 }) => {
-    const response = await axios.put(`http://localhost:3003/accounts/${id}`,{
+    const response = await axios.put(`${API_URL}/accounts/${id}`,{
         id,
         account_name,
         account_type, 
@@ -62,7 +64,7 @@ export const updateAccount = createAsyncThunk('account/updateAccount', async ({
 
 // Delete Single Account
 export const deleteAccount = createAsyncThunk('account/deleteAccount', async (id) => {
-    await axios.delete(`http://localhost:3003/accounts/${id}`);
+    await axios.delete(`${API_URL}/accounts/${id}`);
     return id;
 });
 
