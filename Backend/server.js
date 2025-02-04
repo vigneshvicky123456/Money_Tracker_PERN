@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const sequelize = require('./database');
-const PORT = 3003;
+require('dotenv').config(); 
+const PORT = process.env.PORT || 3003; 
 
 // import models
 const { currencyModel, selectedCurrencyModal } = require("./models/index")
